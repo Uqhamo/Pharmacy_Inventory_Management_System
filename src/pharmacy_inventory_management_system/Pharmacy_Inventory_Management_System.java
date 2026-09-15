@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
+import java.io.FileWriter; 
 /*
 
 public class LoginSystem extends JFrame{
@@ -156,6 +157,10 @@ public class Pharmacy_Inventory_Management_System {
         new LoginSystem().setVisible(true);
     
     });
+        
+        SwingUtilities.invokeLater(() -> {
+        new BillingSystem().setVisible(true);
+        });
     }
     
 }
