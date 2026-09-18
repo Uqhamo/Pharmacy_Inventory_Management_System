@@ -161,6 +161,14 @@ public class Pharmacy_Inventory_Management_System {
         SwingUtilities.invokeLater(() -> {
         new BillingSystem().setVisible(true);
         });
+        
+         SwingUtilities.invokeLater(() -> {
+        new POSsystem().setVisible(true);
+        });
+         
+         SwingUtilities.invokeLater(() -> {
+        new StockCheck().setVisible(true);
+        });
     }
     
 }
