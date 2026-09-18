@@ -94,12 +94,83 @@ public class MedicineManagement extends JFrame{
          ResultSet rs = stmt.executeQuery("SELECT * FROM medicines");
          while(rs.next()){
          tableModel.addRow(new Object[]{
+             rs.getInt("id"),
+             rs.getString("name"),
+             rs.getDouble("price"),
+             rs.getInt("quantity")
+             
          
          });
          }
     }catch(SQLException ex ){
-    
+    ex.printStackTrace();
     }
+    }
+    
+    private void createMedicine(){
+     try{
+         String sql = "INSERT INTO medicines(name,price,quantity) VALUES(?,?,?)";
+         PreparedStatement pst = conn.prepareStatement(sql);
+         pst.setString(1, txtName.getText());
+         pst.setDouble(2, Double.parseDouble(txtPrice.getText()));
+         pst.setInt(3, Integer.parseInt(txtQuantity.getText()));
+         pst.executeUpdate();
+         loadTableData();
+         clearFields();
+         JOptionPane.showMessageDialog(this, "Medicine Added Successfully");
+     
+     }catch(Exception ex){
+       JOptionPane.showMessageDialog(this, "Error:Check your input values");
+
+     }
+    }
+    private void updateMedicine(){
+    try{
+         String sql = "UPDATE medicines SET name=? , price=?,quantity=? WHERE id=?";
+         PreparedStatement pst = conn.prepareStatement(sql);
+         pst.setString(1, txtName.getText());
+         pst.setDouble(2, Double.parseDouble(txtPrice.getText()));
+         pst.setInt(3, Integer.parseInt(txtQuantity.getText()));
+         pst.setInt(4, Integer.parseInt(txtId.getText()));
+
+         pst.executeUpdate();
+         loadTableData();
+         clearFields();
+         JOptionPane.showMessageDialog(this, "Medicine Updated Successfully");
+     
+     }catch(Exception ex){
+       JOptionPane.showMessageDialog(this, "Error:Select a row or enter valid ID");
+       
+
+     }
+    }
+    
+    private void deleteMedicine(){
+        try{
+         String sql = "DELETE FROM medicines WHERE id=?";
+         PreparedStatement pst = conn.prepareStatement(sql);
+        
+         pst.setInt(1, Integer.parseInt(txtId.getText()));
+
+         pst.executeUpdate();
+         loadTableData();
+         clearFields();
+         JOptionPane.showMessageDialog(this, "Medicine Deleted Successfully");
+     
+     }catch(Exception ex){
+       JOptionPane.showMessageDialog(this, "Error:Select or enter enter valid ID to delete");
+       
+
+     }
+        
+    }
+    
+    private void clearFields(){
+    txtId.setText("");
+    txtName.setText("");
+    txtPrice.setText("");
+    txtQuantity.setText("");
+    
     }
     
 }
