@@ -68,6 +68,25 @@ public class StockCheck extends JFrame{
     rowSorter = new TableRowSorter<>(tableModel);
     medicineTable.setRowSorter(rowSorter);
     
+    JScrollPane scrollPane = new JScrollPane(medicineTable);
+    scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+    add(scrollPane, BorderLayout.CENTER);
     
+    searchField.addKeyListener(new KeyAdapter(){
+    @Override
+    public void keyReleased(KeyEvent e){
+    String text = searchField.getText();
+    if(text.trim().length() == 0){
+    rowSorter.setRowFilter(null);
+    }else{
+    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+    }
+    }
+    
+    });
+    }
+    
+    private javax.swing.border.Border BorderBorderFactory(int padding){
+ return BorderFactory.createEmptyBorder(padding,padding,padding,padding);
     }
 }
