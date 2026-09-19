@@ -19,6 +19,10 @@ private static final Map<String,UserData> userDatabase = new HashMap<>();
 
  }
  private JTextField usernameField;
+  private JTextField RoleField;
+    private JTextField FullNameField;
+
+
  private JPasswordField passwordField;
  private JLabel messageLabel;
  
@@ -55,6 +59,20 @@ private static final Map<String,UserData> userDatabase = new HashMap<>();
      passwordField =new JPasswordField(15);
      formPanel.add(passwordField,gbc);
      add(formPanel, BorderLayout.CENTER);
+     
+     gbc.gridx = 0; gbc.gridy=2;
+     formPanel.add(new JLabel("Role:"),gbc);
+     gbc.gridx = 1;
+     RoleField = new JTextField(15);
+     formPanel.add(RoleField, gbc);
+     
+     gbc.gridx = 0; gbc.gridy=3;
+     formPanel.add(new JLabel("Full Name:"),gbc);
+     gbc.gridx = 1;
+     FullNameField = new JTextField(15);
+     formPanel.add(FullNameField, gbc);
+     
+     
      
      JPanel bottomPanel = new JPanel(new GridLayout(2,1,5,5));
      
