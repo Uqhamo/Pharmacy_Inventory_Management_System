@@ -19,7 +19,7 @@ public class SupplierManagement extends JFrame {
     private JButton btnAdd,btnUpdate,btnDelete,btnClear;
 
     public SupplierManagement(){
-    setTitle("HealthFirst Medicine Management System");
+    setTitle("HealthFirst Supplier Management System");
     setSize(700, 450);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setLocationRelativeTo(null);
