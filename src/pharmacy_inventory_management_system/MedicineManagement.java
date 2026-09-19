@@ -44,12 +44,21 @@ public class MedicineManagement extends JFrame{
     txtQuantity = new JTextField();
     panelForm.add(txtQuantity);
     
-    add(panelForm, NORTH);
+    add(panelForm, BorderLayout.NORTH);
     
     tableModel = new DefaultTableModel(new String[]{"ID","Name","Price","Quantity"},0);
     table = new JTable(tableModel);
-    
-    add(new JScrollPane(table), CENTER);
+    table.addMouseListener(new MouseAdapter(){
+    public void mouseClicked(MouseEvent e){
+    int row  = table.getSelectedRow();
+    txtId.setText(tableModel.getValueAt(row, 0).toString());
+    txtName.setText(tableModel.getValueAt(row, 1).toString());
+    txtPrice.setText(tableModel.getValueAt(row, 2).toString());
+    txtQuantity.setText(tableModel.getValueAt(row, 3).toString());
+
+    }
+    });
+    add(new JScrollPane(table),BorderLayout.CENTER);
     
     JPanel panelButtons = new JPanel();
     JButton btnCreate = new JButton("Add (Create)");
@@ -65,12 +74,12 @@ public class MedicineManagement extends JFrame{
     panelButtons.add(btnDelete);
     panelButtons.add(btnClear);
     
-    add(panelButtons, SOUTH);
+    add(panelButtons,BorderLayout.SOUTH);
     btnCreate.addActionListener(e -> createMedicine());
     btnRead.addActionListener(e -> loadTableData());
     btnUpdate.addActionListener(e -> updateMedicine());
     btnDelete.addActionListener(e -> deleteMedicine());
-    btnClear.addActionListener(e -> createFields());
+    btnClear.addActionListener(e -> clearFields());
  
     loadTableData();
 
