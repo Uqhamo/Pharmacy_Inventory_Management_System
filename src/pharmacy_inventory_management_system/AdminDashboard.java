@@ -1,0 +1,24 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package pharmacy_inventory_management_system;
+import javax.swing.*;
+import java.awt.*;
+/**
+ *
+ * @author uqham
+ */
+public class AdminDashboard extends JFrame {
+    public AdminDashboard(){
+    
+    setTitle("HealthFirst");
+    setSize(500, 450);
+     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+     setLocationRelativeTo(null);
+     setLayout(new BorderLayout(10,10));
+     JLabel label = new JLabel("Welcome to the Admin Dashboard",SwingConstants.CENTER);
+ label.setFont(new Font("Arial",Font.BOLD,20));
+ add(label);
+    }
+}
