@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Locale;
+import java.sql.*;
 
 /**
  *
@@ -22,6 +23,7 @@ public class POSsystem extends JFrame {
     private JLabel lblSubtotal;
     private JLabel lblTax;
     private JLabel lblTotal;
+    private Connection conn;
     
     private final double TAX_RATE = 0.05;
     private double subtotal = 0.00;
@@ -35,6 +37,7 @@ public class POSsystem extends JFrame {
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setLocationRelativeTo(null);
     setLayout(new BorderLayout(10,10));
+    connectDatabase();
     
     JPanel headerPanel = new JPanel(new BorderLayout());
     headerPanel.setBackground(new Color(44,62,80));
@@ -140,6 +143,16 @@ cartItems.put(name, newRowIndex);
 subtotal +=price;
 updateTotals();
 }
+private void connectDatabase(){
+try{
+conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/healthfirstdb","root","Mekana@12345");
+Statement stmt = conn.createStatement();
+
+stmt.execute("CREATE TABLE IF NOT EXISTS sales("+"sale_id INT PRIMARY KEY AUTO_INCREMENT," +"sale_date: TIMESTAMP, DEFAULT CURRENT_TIMESTAMP "+"total_amount: DECIMAL(10,2)"+"user_id: INT, FK )");
+}catch(Exception ex ){
+JOptionPane.showMessageDialog(this, "Database Error:" + ex.getMessage());
+}
+}
     private void updateTotals(){
     double tax = subtotal * TAX_RATE;
     double total = subtotal + tax;
@@ -159,14 +172,48 @@ updateTotals();
     
     private void processPayment(){
     if(tableModel.getRowCount()==0){
-    JOptionPane.showMessageDialog(this, "Your cart is empty!","Error",JOptionPane.WARNING_MESSAGE);
+    JOptionPane.showMessageDialog(this, 
+            "Your cart is empty!","Error",
+            JOptionPane.WARNING_MESSAGE);
     return;
     }
     double tax = subtotal * TAX_RATE;
     double total = subtotal + tax;
+    saveSaleToDatabase();
     
     String receiptMessage = String.format("Transaction Complete!\n\nTotal Paid: %s\n Thank you for your business!",currencyFormatter.format(total));
     JOptionPane.showMessageDialog(this, receiptMessage,"Success",JOptionPane.INFORMATION_MESSAGE);
     clearCart();
+    }
+    
+    private void saveSaleToDatabase(){
+    try{
+        Statement idStmt = conn.createStatement();
+        ResultSet idRs = idStmt.executeQuery("SELECT COALESCE(MAX(transaction_id),0) +1 AS sales_id FROM sales");
+        int transactionId = 1;
+        if(idRs.next()){
+        transactionId =  idRs.getInt("sales_id");
+        }
+        String sql = "INSERT INTO sales(sale_id,sale_date,total_amount,user_id)";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        for(int row = 0; row<tableModel.getRowCount(); row++){
+        String itemName = tableModel.getValueAt(row, 0).toString();
+            int qty = (int) tableModel.getValueAt(row, 1);
+            String priceStr = tableModel.getValueAt(row, 2).toString().replaceAll("[^0-9.]", "");
+            String totalStr = tableModel.getValueAt(row, 3).toString().replaceAll("[^0-9.]", "");
+            double unitPrice = Double.parseDouble(priceStr);
+            double lineTotal = Double.parseDouble(totalStr);
+
+            pst.setInt(1, transactionId);
+            pst.setString(2, itemName);
+            pst.setInt(3, qty);
+            pst.setDouble(4, unitPrice);
+            pst.setDouble(5, lineTotal);
+            pst.executeUpdate();
+        }
+    
+    }catch(Exception ex){
+    JOptionPane.showMessageDialog(this,"Error saving sale:" + ex.getMessage());
+    }
     }
 }
