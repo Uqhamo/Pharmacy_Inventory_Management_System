@@ -169,6 +169,14 @@ public class Pharmacy_Inventory_Management_System {
          SwingUtilities.invokeLater(() -> {
         new StockCheck().setVisible(true);
         });
+         
+         SwingUtilities.invokeLater(() -> {
+        new SupplierManagement().setVisible(true);
+        });
+         
+         SwingUtilities.invokeLater(() -> {
+        new UserManagement().setVisible(true);
+        });
     }
     
 }
