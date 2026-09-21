@@ -21,23 +21,34 @@ public class StockCheck extends JFrame{
     private DefaultTableModel tableModel;
     private TableRowSorter<DefaultTableModel> rowSorter;
     private Connection conn;
+    
+    private final Color PRIMARY_GREEN = new Color(39,174,96);
+    private final Color DARK_GREEN = new Color(30,123,73);
+    private final Color LIGHT_GREEN = new Color(232,245,233);
+    private final Color RED = new Color(192,57,43);
+    private final Color LIGHT_BACKGROUND = new Color(245,250,247);
+
     public StockCheck(){
     setTitle("HealthFirst Stock Check");
     setSize(700, 450);
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     setLocationRelativeTo(null);
     setLayout(new BorderLayout(10,10));
+             getContentPane().setBackground(LIGHT_BACKGROUND);
+
     
-    
-    JPanel searchPanel = new JPanel(new BorderLayout(5,5));
-    searchPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+    JPanel searchPanel = new JPanel(new BorderLayout(10,10));
+    searchPanel.setBackground(LIGHT_BACKGROUND);
+    searchPanel.setBorder(BorderFactory.createEmptyBorder(15,15,15,15));
     
     JLabel searchLabel = new JLabel("Quick Search (Name/ID):");
     searchLabel.setFont(new Font("Arial",Font.BOLD, 14));
-    
+    searchLabel.setForeground(DARK_GREEN);
     searchField = new JTextField();
     searchField.setFont(new Font("Arial", Font.PLAIN, 14));
-    
+    searchField.setBorder(
+    BorderFactory.createLineBorder(PRIMARY_GREEN,2));
+
     searchPanel.add(searchLabel,BorderLayout.WEST);
     searchPanel.add(searchField, BorderLayout.CENTER);
     add(searchPanel,BorderLayout.NORTH);
@@ -49,17 +60,7 @@ public class StockCheck extends JFrame{
             "Available Stock", 
             "Reorder Level",
     "Expiry Date"};
-    /*
-    Object [][] data = {
-        {"M001","Amoxicillin 500mg","40", "45 boxes","Aisle 3-Shelf B"},
-        {"M002","Ibuprofen 400mg","35", "120 bottles","Aisle 3-Shelf A"},
-        {"M003","Metformin  850mg","70", "0 (Out of Stock)","Aisle 4-Shelf C"},
-        {"M004","Atorvastatin 20mg","140", "30 boxes","Aisle 2-Shelf D"},
-        {"M005","Paracetmol 500mg","25", "200 packs","Aisle 1-Shelf A"},
-        {"M006","Omeprazole 500mg","85", "10 boxes","Aisle 3-Shelf A"},
-
-    };
-    */
+   
     tableModel = new DefaultTableModel(columnNames,0){
     @Override
     public boolean isCellEditable(int row, int column){
@@ -68,54 +69,34 @@ public class StockCheck extends JFrame{
     };
     
     medicineTable = new JTable(tableModel);
-    medicineTable.setFont(new Font("Arial",
-            Font.PLAIN,13));
-    medicineTable.setRowHeight(25);
-    medicineTable.setSelectionMode(
-            ListSelectionModel.SINGLE_SELECTION);
+    medicineTable.setFont(new Font("Arial",Font.PLAIN,13));
+    medicineTable.setRowHeight(28);
+    medicineTable.setSelectionBackground(LIGHT_GREEN);
+    medicineTable.setSelectionForeground(Color.BLACK);
+
+    medicineTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
     rowSorter = new TableRowSorter<>(tableModel);
     medicineTable.setRowSorter(rowSorter);
     
-    JScrollPane scrollPane = new JScrollPane(
-            medicineTable);
-    scrollPane.setBorder(
-            BorderFactory.createEmptyBorder(0, 10, 10, 10));
+    JScrollPane scrollPane = new JScrollPane(medicineTable);
+    scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
     add(scrollPane, BorderLayout.CENTER);
     
     searchField.addKeyListener(new KeyAdapter(){
     @Override
     public void keyReleased(KeyEvent e){
-        /*
-    String text = searchField.getText();
-    if(text.trim().length() == 0){
-    rowSorter.setRowFilter(null);
-    }else{
-    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
-    }
-    }*/
-         String text = searchField.getText().trim();
-
-                if (text.length() == 0) {
-
-                    rowSorter.setRowFilter(null);
-
-                } else {
-
-                    try {
-
-                        rowSorter.setRowFilter(
-                                RowFilter.regexFilter(
-                                        "(?i)" + text
-                                )
-                        );
-
-                    } catch (java.util.regex.PatternSyntaxException ex) {
-
-                        rowSorter.setRowFilter(null);
+        
+    String text = searchField.getText().trim();
+         if (text.length() == 0) {
+            rowSorter.setRowFilter(null);
+         }else{
+             try {
+                rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+             } catch (java.util.regex.PatternSyntaxException ex) {
+                rowSorter.setRowFilter(null);
                     }
-                }
-            }
+                }}
         });
 
         connectDatabase();
@@ -126,19 +107,12 @@ public class StockCheck extends JFrame{
         try {
 
             conn = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/healthfirstdb",
-                    "root",
-                    "Mekana@12345"
-            );
+                    "jdbc:mysql://localhost:3306/healthfirstdb","root","Mekana@12345");
 
-        } catch (SQLException ex) {
+        }catch(SQLException ex) {
 
             JOptionPane.showMessageDialog(
-                    this,
-                    "Database Error: " + ex.getMessage(),
-                    "Database Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
+                    this, "Database Error: " + ex.getMessage(),"Database Error",JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -192,7 +166,6 @@ public class StockCheck extends JFrame{
     }
 }
     
-   // private javax.swing.border.Border BorderBorderFactory(int padding){
- //return BorderFactory.createEmptyBorder(padding,padding,padding,padding);
+   
     
 
