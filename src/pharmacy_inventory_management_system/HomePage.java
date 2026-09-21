@@ -46,12 +46,41 @@ public class HomePage extends JFrame {
     new LoginSystem().setVisible(true);
     });
     
-    centerPanel.add(subtitleLabel);
-    centerPanel.add(Box.createRigidArea(new Dimension(0,30)));
-    centerPanel.add(btnLogin);
+    JButton btnRegister = new JButton("Register");
+
+        btnRegister.setFont(
+                new Font("Arial", Font.BOLD, 16)
+        );
+
+        btnRegister.setAlignmentX(
+                Component.CENTER_ALIGNMENT
+        );
+
+        btnRegister.setMaximumSize(
+                new Dimension(200, 45)
+        );
+
+        btnRegister.addActionListener(e -> {
+
+            new RegistrationSystem().setVisible(true);
+        });
+        
     
+   centerPanel.add(subtitleLabel);
+   centerPanel.add(Box.createRigidArea(new Dimension(0,30)));
+    
+   centerPanel.add(btnLogin);
+   //centerPanel.add(Box.createRigidArea(new Dimension(0,15)));
+   centerPanel.add(
+                Box.createRigidArea(
+                        new Dimension(0, 15)
+                )
+        );
+   centerPanel.add(btnRegister);
+   
     add(centerPanel, BorderLayout.CENTER);
     
     
-    }
+    
+}
 }
