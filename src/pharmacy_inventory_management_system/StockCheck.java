@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import javax.swing.table.TableRowSorter;
 import java.awt.event.KeyEvent;
+import java.sql.*;
 /**
  *
  * @author uqham
@@ -19,7 +20,7 @@ public class StockCheck extends JFrame{
     private JTable medicineTable;
     private DefaultTableModel tableModel;
     private TableRowSorter<DefaultTableModel> rowSorter;
-    
+    private Connection conn;
     public StockCheck(){
     setTitle("HealthFirst Stock Check");
     setSize(700, 450);
@@ -29,7 +30,7 @@ public class StockCheck extends JFrame{
     
     
     JPanel searchPanel = new JPanel(new BorderLayout(5,5));
-    searchPanel.setBorder(BorderBorderFactory(10));
+    searchPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
     
     JLabel searchLabel = new JLabel("Quick Search (Name/ID):");
     searchLabel.setFont(new Font("Arial",Font.BOLD, 14));
@@ -41,8 +42,14 @@ public class StockCheck extends JFrame{
     searchPanel.add(searchField, BorderLayout.CENTER);
     add(searchPanel,BorderLayout.NORTH);
     
-    String [] columnNames = {"Medicine ID","Medicine Name","Price (R)", "Available Stock", "Shelf Location"};
-    
+    String [] columnNames = {"Medicine ID"
+            ,"Medicine Name",
+            "Company",
+            "Price (R)", 
+            "Available Stock", 
+            "Reorder Level",
+    "Expiry Date"};
+    /*
     Object [][] data = {
         {"M001","Amoxicillin 500mg","40", "45 boxes","Aisle 3-Shelf B"},
         {"M002","Ibuprofen 400mg","35", "120 bottles","Aisle 3-Shelf A"},
@@ -52,8 +59,8 @@ public class StockCheck extends JFrame{
         {"M006","Omeprazole 500mg","85", "10 boxes","Aisle 3-Shelf A"},
 
     };
-    
-    tableModel = new DefaultTableModel(data, columnNames){
+    */
+    tableModel = new DefaultTableModel(columnNames,0){
     @Override
     public boolean isCellEditable(int row, int column){
     return false;
@@ -61,32 +68,131 @@ public class StockCheck extends JFrame{
     };
     
     medicineTable = new JTable(tableModel);
-    medicineTable.setFont(new Font("Arial",Font.PLAIN,13));
+    medicineTable.setFont(new Font("Arial",
+            Font.PLAIN,13));
     medicineTable.setRowHeight(25);
-    medicineTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    medicineTable.setSelectionMode(
+            ListSelectionModel.SINGLE_SELECTION);
 
     rowSorter = new TableRowSorter<>(tableModel);
     medicineTable.setRowSorter(rowSorter);
     
-    JScrollPane scrollPane = new JScrollPane(medicineTable);
-    scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+    JScrollPane scrollPane = new JScrollPane(
+            medicineTable);
+    scrollPane.setBorder(
+            BorderFactory.createEmptyBorder(0, 10, 10, 10));
     add(scrollPane, BorderLayout.CENTER);
     
     searchField.addKeyListener(new KeyAdapter(){
     @Override
     public void keyReleased(KeyEvent e){
+        /*
     String text = searchField.getText();
     if(text.trim().length() == 0){
     rowSorter.setRowFilter(null);
     }else{
     rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
     }
+    }*/
+         String text = searchField.getText().trim();
+
+                if (text.length() == 0) {
+
+                    rowSorter.setRowFilter(null);
+
+                } else {
+
+                    try {
+
+                        rowSorter.setRowFilter(
+                                RowFilter.regexFilter(
+                                        "(?i)" + text
+                                )
+                        );
+
+                    } catch (java.util.regex.PatternSyntaxException ex) {
+
+                        rowSorter.setRowFilter(null);
+                    }
+                }
+            }
+        });
+
+        
+        loadStock();
     }
-    
-    });
+      private void connectDatabase() {
+
+        try {
+
+            conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/healthfirstdb",
+                    "root",
+                    "Mekana@12345"
+            );
+
+        } catch (SQLException ex) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Database Error: " + ex.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
-    
-    private javax.swing.border.Border BorderBorderFactory(int padding){
- return BorderFactory.createEmptyBorder(padding,padding,padding,padding);
+
+    private void loadStock() {
+
+        tableModel.setRowCount(0);
+
+        String sql = "SELECT medicine_id, name, company, price, "
+                + "quantity_in_stock, reorder_level, expiry_date "
+                + "FROM medicines "
+                + "ORDER BY name";
+
+        try (
+                PreparedStatement pst = conn.prepareStatement(sql);
+                ResultSet rs = pst.executeQuery()
+        ) {
+
+            while (rs.next()) {
+
+                int quantity = rs.getInt("quantity_in_stock");
+                int reorderLevel = rs.getInt("reorder_level");
+
+                String stockStatus = String.valueOf(quantity);
+
+                if (quantity == 0) {
+                    stockStatus = quantity + " (OUT OF STOCK)";
+                } else if (quantity <= reorderLevel) {
+                    stockStatus = quantity + " (LOW STOCK)";
+                }
+
+                tableModel.addRow(new Object[]{
+                    rs.getInt("medicine_id"),
+                    rs.getString("name"),
+                    rs.getString("company"),
+                    rs.getDouble("price"),
+                    stockStatus,
+                    reorderLevel,
+                    rs.getDate("expiry_date")
+                });
+            }
+
+        } catch (SQLException ex) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Error loading stock: " + ex.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 }
+    
+   // private javax.swing.border.Border BorderBorderFactory(int padding){
+ //return BorderFactory.createEmptyBorder(padding,padding,padding,padding);
+    
+
