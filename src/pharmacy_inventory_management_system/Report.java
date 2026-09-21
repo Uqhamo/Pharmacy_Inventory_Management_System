@@ -18,20 +18,41 @@ public class Report extends JFrame{
     private DefaultTableModel tableModel;
     private JLabel lblSummary;
     private Connection conn;
-    
+    private final Color PRIMARY_GREEN = new Color(39,174,96);
+private final Color DARK_GREEN = new Color(30,123,73);
+private final Color LIGHT_GREEN = new Color(232,245,233);
+private final Color RED = new Color(192,57,43);
+private final Color LIGHT_BACKGROUND = new Color(245,250,247);
     public Report(){
-    setTitle("HealthFirst");
+    setTitle("HealthFirst Reports");
     setSize(500, 450);
-     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-     setLocationRelativeTo(null);
-     setLayout(new BorderLayout(10,10));
-     
-     connectDatabase();
-      JPanel topPanel  = new JPanel(new GridLayout(
-              3,1,10,10));
-      topPanel.setBorder(BorderFactory.createTitledBorder(
-              "Select Report"));
-      
+    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setLocationRelativeTo(null);
+    setLayout(new BorderLayout(10,10));
+    getContentPane().setBackground(LIGHT_BACKGROUND);
+
+    connectDatabase();
+    JPanel headerPanel = new JPanel();
+    headerPanel.setBackground(PRIMARY_GREEN);
+    headerPanel.setBorder( BorderFactory.createEmptyBorder(15, 20, 15, 20));
+    JLabel titleLabel = new JLabel("HealthFirst Reports");
+
+    titleLabel.setForeground(Color.WHITE);
+
+    titleLabel.setFont(new Font("Arial", Font.BOLD,22));
+
+    headerPanel.add(titleLabel);
+    
+    
+    JPanel topPanel  = new JPanel(new GridLayout(3,1,10,10));
+    topPanel.setBackground(LIGHT_BACKGROUND);
+    topPanel.setBorder(BorderFactory.createTitledBorder("Select Report"));
+
+    JLabel lblReport = new JLabel("Report Type:");
+
+    lblReport.setFont(new Font("Arial",Font.BOLD,14));
+
+    lblReport.setForeground(DARK_GREEN);
       reportSelector = new JComboBox<>(new String[]{
       "Stock Levels Report",
        "Low Stock /Out of Stock Report",
@@ -39,40 +60,91 @@ public class Report extends JFrame{
        "Sales Summary "
       });
       
-      JButton btnGenerate = new JButton("Generate Report");
-      btnGenerate.addActionListener(e -> generateReport());
+    JButton btnGenerate = new JButton("Generate Report");
+     
+    btnGenerate.setBackground(PRIMARY_GREEN);
+    btnGenerate.setForeground(Color.WHITE);
+
+    btnGenerate.setFont(new Font("Arial",Font.BOLD,14));
+
+    btnGenerate.setFocusPainted(false);
+    btnGenerate.setBorderPainted(false);
+
       
-      topPanel.add(new JLabel ("Report Type:"));
-      topPanel.add(reportSelector);
-      topPanel.add(btnGenerate);
-      add(topPanel, BorderLayout.NORTH);
+    btnGenerate.addActionListener(e -> generateReport());
       
+    topPanel.add(new JLabel ("Report Type:"));
+    topPanel.add(reportSelector);
+    topPanel.add(btnGenerate);
+    add(topPanel, BorderLayout.NORTH);
       
-      tableModel = new DefaultTableModel();
-      reportTable = new JTable(tableModel);
-       reportTable.setAutoResizeMode(
-                JTable.AUTO_RESIZE_ALL_COLUMNS
-        );
+    JPanel topContainer = new JPanel(new BorderLayout(10, 10));
+
+    topContainer.setBackground(LIGHT_BACKGROUND);
+
+    topContainer.add(headerPanel,BorderLayout.NORTH);
+
+    topContainer.add(topPanel,BorderLayout.CENTER);
+
+    add(topContainer,BorderLayout.NORTH);
+    
+    tableModel = new DefaultTableModel();
+    reportTable = new JTable(tableModel);
+      
+    reportTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+    reportTable.setFont(new Font("Arial",Font.PLAIN,13));
+
+    reportTable.setRowHeight(28);
+
+    reportTable.setSelectionBackground(
+            LIGHT_GREEN);
+
+    reportTable.setSelectionForeground(
+            Color.BLACK
+    );
+
+    
+    reportTable
+            .getTableHeader()
+            .setBackground(PRIMARY_GREEN);
+
+    reportTable
+            .getTableHeader()
+            .setForeground(Color.WHITE);
+
+    reportTable.getTableHeader().setFont(new Font( "Arial", Font.BOLD, 13));
+    JScrollPane scrollPane =
+            new JScrollPane(reportTable);
+
+    scrollPane.setBorder(
+            BorderFactory.createEmptyBorder(
+                    10, 10, 10, 10
+            )
+    );
+
+    add(scrollPane,BorderLayout.CENTER);
        
       add(new JScrollPane(reportTable), BorderLayout.CENTER);
       
-      lblSummary = new JLabel(" ", SwingConstants.LEFT);
-      lblSummary.setFont(new Font ("Segoe UI", Font.BOLD,14));
-      lblSummary.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+     lblSummary = new JLabel(" ", SwingConstants.LEFT);
+     lblSummary.setFont(new Font ("Arial", Font.BOLD,14));
+      
+     lblSummary.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+     lblSummary.setForeground(DARK_GREEN);
+    lblSummary.setOpaque(true);
+    lblSummary.setBackground(LIGHT_GREEN);
+
+    lblSummary.setBorder(
+            BorderFactory.createEmptyBorder(
+                    15, 15, 15, 15
+            )
+    );
       add(lblSummary, BorderLayout.SOUTH);
       
       generateReport();
     }
     
     private void connectDatabase(){
-        /*
-    try{
-    conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/healthfirstdb,root,Mekana@12345");
-    
-    }catch(Exception ex){
-    JOptionPane.showMessageDialog(this, "Database Error:"+ex.getMessage());
-    }*/
-        
        try {
 
             conn = DriverManager.getConnection(
@@ -105,12 +177,7 @@ public class Report extends JFrame{
     }
     }
     
-    private void stockLevelsReport(){/*
-    tableModel.setDataVector(new Object[0][0], 
-            new String[]{
-            
-"ID","Name","Price (R)","Quantity","Line Value(R)"});
-    */
+    private void stockLevelsReport(){
     tableModel.setDataVector(
                 new Object[0][0],
                 new String[]{
@@ -177,34 +244,11 @@ int totalItems = 0;
                 + " | Total units in stock: "
                 + totalQuantity
         );
-     /*
-    try{
-    Statement stmt = conn.createStatement();
-    ResultSet rs = stmt.executeQuery("SELECT *FROM medicines ORDER BY name");
-    while(rs.next()){
-    tableModel.addRow(new Object[]{
-    rs.getInt("id"),rs.getString("name"),
-     rs.getDouble("price"), rs.getInt("quantity")
-    });
-    totalItems++;
-    }
     
-    }catch(SQLException ex){
-    JOptionPane.showMessageDialog(this, "Error loading report: "+ ex.getMessage());
-    
-    }
-    lblSummary.setText(String.format("Total inventory value: R%.2f", totalItems));
-    
-
-    }*/
-     
     }
     
     private void lowStockReport(){
-        /*
-    tableModel.setDataVector(new Object [0][0], 
-            new String []{"ID","Name","Price (R)",
-                "Quantity"});*/
+        
       tableModel.setDataVector(
                 new Object[0][0],
                 new String[]{
@@ -218,7 +262,7 @@ int totalItems = 0;
                 }
         );   
     int lowCount = 0;
-    //final int LOW_THRESHOLD = 10;
+    
     
     String sql =
                 "SELECT medicine_id, name, company, price, "
@@ -228,17 +272,14 @@ int totalItems = 0;
                 + "ORDER BY quantity_in_stock ASC";
 
         try (
-                PreparedStatement pst =
-                        conn.prepareStatement(sql);
+            PreparedStatement pst = conn.prepareStatement(sql);
 
-                ResultSet rs =
-                        pst.executeQuery()
+            ResultSet rs = pst.executeQuery()
         ) {
 
             while (rs.next()) {
 
-                int quantity =
-                        rs.getInt("quantity_in_stock");
+                int quantity = rs.getInt("quantity_in_stock");
 
                 String status;
 
@@ -280,28 +321,9 @@ int totalItems = 0;
         );
     }
 
-    /*
-    try{
-    Statement stmt = conn.createStatement();
-    ResultSet rs = stmt.executeQuery("SELECT *FROM medicnes WHERE quantity <="+LOW_THRESHOLD +"ORDER BY quantity ASC");
-    while(rs.next()){
-    tableModel.addRow(new Object[]{
-    rs.getInt("id"),rs.getString("name"),rs.getDouble("price"),rs.getInt("quantity")
-    });
-    lowCount++;
-    }
-    }catch(SQLException ex){
-    JOptionPane.showMessageDialog(this, "Error loading report: "+ ex.getMessage());
-    }
-    lblSummary.setText("Medicines at or below" + LOW_THRESHOLD + "units:" + lowCount);
-    
-     */
-
     
     private void inventoryValueReport(){
-        /*
-    tableModel.setDataVector(new Object [0][0], new String []{"ID","Name","Price (R)","Quantity","Line Value (R)"});
-    */
+       
          tableModel.setDataVector(
                 new Object[0][0],
                 new String[]{
@@ -309,12 +331,12 @@ int totalItems = 0;
                     "Name",
                     "Price (R)",
                     "Quantity",
-                    "Line Value (R)"
+                    "Total Value (R)"
                 }
         );
-double totalValue =0.00;
+    double totalValue =0.00;
 
- String sql =
+    String sql =
                 "SELECT medicine_id, name, price, "
                 + "quantity_in_stock "
                 + "FROM medicines "
@@ -330,18 +352,15 @@ double totalValue =0.00;
 
             while (rs.next()) {
 
-                double price =
-                        rs.getDouble("price");
+            double price =rs.getDouble("price");
 
-                int quantity =
-                        rs.getInt("quantity_in_stock");
+            int quantity =rs.getInt("quantity_in_stock");
 
-                double lineValue =
-                        price * quantity;
+            double lineValue = price * quantity;
 
-                totalValue += lineValue;
+            totalValue += lineValue;
 
-                tableModel.addRow(
+            tableModel.addRow(
                         new Object[]{
                             rs.getInt("medicine_id"),
                             rs.getString("name"),
@@ -363,40 +382,14 @@ double totalValue =0.00;
             );
         }
 
-        lblSummary.setText(
-                String.format(
-                        "Total inventory value: R%.2f",
-                        totalValue
+        lblSummary.setText(String.format("Total inventory value: R%.2f",totalValue
                 )
         );
     }
 
 
-    /*
-    try{
-    Statement stmt = conn.createStatement();
-    
-    ResultSet rs = stmt.executeQuery("SELECT *FROM medicines ORDER BY name" );
-    
-    while(rs.next()){
-    double price = rs.getDouble("price");
-    int qty = rs.getInt("quantity");
-    double lineValue = price * qty;
-    totalValue += lineValue;
-    tableModel.addRow(new Object[] {rs.getInt("id"), rs.getString("name"),price,qty,lineValue});
-        
-    }
-    }catch(SQLException ex){
-        JOptionPane.showMessageDialog(this, "Error loading report:"+ ex.getMessage());
-    }
-    lblSummary.setText(String.format("Total inventory value: R%.2f", totalValue));
-    */
-    
-    
     private void salesSummaryReport(){
-        /*
-    tableModel.setDataVector(new Object[0][0], new String[]{"Item","Unit Sold","Revenue (R)"});
-    */
+        
         
         tableModel.setDataVector(
                 new Object[0][0],
@@ -461,24 +454,6 @@ double totalRevenue =0.00;
                 )
         );
     }
-    /*
-    try{
-    Statement stmt = conn.createStatement();
-    ResultSet rs = stmt.executeQuery("SELECT item_name, SUM(quantity) AS units, SUM(line_total) AS revenue "+ "FROM sales GROUP BY item_name ORDER BY revenue DESC");
-            
-    while(rs.next()){
-        double revenue = rs.getDouble("revenue");
-        tableModel.addRow(new Object []{
-        rs.getString("item_name"), rs.getInt("units"),revenue
-        });
-        totalRevenue += revenue;
-    }
-    }catch(SQLException ex){
-        JOptionPane.showMessageDialog(this, "Error loading sales report: "+ ex.getMessage());
-    }
-    lblSummary.setText(String.format("Total revenue from all sales: R%.2f", totalRevenue));
-    }
-    */
     
     
 }
