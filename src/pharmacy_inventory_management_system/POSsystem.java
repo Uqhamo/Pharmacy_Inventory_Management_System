@@ -6,8 +6,6 @@ package pharmacy_inventory_management_system;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-//import java.awt.event.ActionEvent;
-//import java.awt.event.ActionListener;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Locale;
@@ -25,330 +23,175 @@ public class POSsystem extends JFrame {
     private JLabel lblTotal;
     private Connection conn;
     
-    private final double TAX_RATE = 0.05;
+    private final double TAX_RATE = 0.15;
     private double subtotal = 0.00;
     
     private HashMap<Integer, Integer> cartItems = new HashMap<>();
-    private NumberFormat currencyFormatter = 
-            NumberFormat.getCurrencyInstance( new Locale("en","ZA"));
+    private NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance( new Locale("en","ZA"));
     private int userId;
+    private final Color PRIMARY_GREEN = new Color(39,174,96);
+    private final Color DARK_GREEN = new Color(30,123,73);
+    private final Color LIGHT_GREEN = new Color(232,245,233);
+    private final Color RED = new Color(192,57,43);
+    private final Color LIGHT_BACKGROUND = new Color(245,250,247);
     public POSsystem(int userId){
      
-        this.userId = userId;
+    this.userId = userId;
         
     setTitle("HealthFirst POS");
     setSize(1024,700);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setLocationRelativeTo(null);
     setLayout(new BorderLayout(10,10));
+    getContentPane().setBackground(LIGHT_BACKGROUND);
+    
     connectDatabase();
     
     JPanel headerPanel = new JPanel(new BorderLayout());
-    headerPanel.setBackground(new Color(44,62,80));
-    headerPanel.setBorder(
-            BorderFactory.createEmptyBorder(
-                    15,20,15,20));
+    headerPanel.setBackground(PRIMARY_GREEN);
+    headerPanel.setBorder(BorderFactory.createEmptyBorder(15,20,15,20));
     
     JLabel titleLabel = new JLabel("HeallthFirst POS");
-    titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+    titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
     titleLabel.setForeground(Color.WHITE);
     headerPanel.add(titleLabel, BorderLayout.WEST);
     
     add(headerPanel, BorderLayout.NORTH);
     
-    JPanel productPanel = new JPanel(new BorderLayout());
-    productPanel.setBorder(
-            BorderFactory.createTitledBorder(
-                    BorderFactory.createLineBorder
-        (Color.LIGHT_GRAY), "Medicine Catalog"));
+    JPanel productPanel = new JPanel(new BorderLayout(10,10));
+    productPanel.setBackground(LIGHT_BACKGROUND);
     
-    JPanel gridPanel = new JPanel(new GridLayout(
-            0,3,10,10));
+    productPanel.setBorder(BorderFactory.createTitledBorder( BorderFactory.createLineBorder(PRIMARY_GREEN,2), "Medicine Catalog"));
     
-    gridPanel.setBorder(
-            BorderFactory.createEmptyBorder(
-                    10,10,10,10));
+    JPanel gridPanel = new JPanel();
     
-     loadMedicineButtons(gridPanel);
+    gridPanel.setLayout(new BoxLayout(gridPanel,BoxLayout.Y_AXIS));
+    
+    gridPanel.setBackground(LIGHT_BACKGROUND);
 
-        JScrollPane itemScroll =
-                new JScrollPane(gridPanel);
+    
+    gridPanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+    
+    loadMedicineButtons(gridPanel);
 
-        productPanel.add(
-                itemScroll,
-                BorderLayout.CENTER
-        );
+    JScrollPane itemScroll = new JScrollPane(gridPanel);productPanel.add(itemScroll,BorderLayout.CENTER);
+    itemScroll.getViewport().setBackground(LIGHT_BACKGROUND);
+    
+    itemScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    productPanel.add(itemScroll, BorderLayout.CENTER);
 
-        add(productPanel, BorderLayout.CENTER);
+    add(productPanel, BorderLayout.CENTER);
 
-        JPanel rightPanel = new JPanel(
-                new BorderLayout(10, 10)
-        );
+    JPanel rightPanel = new JPanel(new BorderLayout(10, 10));
 
-        rightPanel.setPreferredSize(
-                new Dimension(420, 0)
-        );
+    rightPanel.setPreferredSize(new Dimension(420, 0));
 
-        rightPanel.setBorder(
-                BorderFactory.createTitledBorder(
-                        BorderFactory.createLineBorder(
-                                Color.LIGHT_GRAY
-                        ),
-                        "Current Order"
-                )
-        );
+    rightPanel.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(PRIMARY_GREEN,2), "Current Order"));
 
-        String[] columns = {
-            "Medicine ID",
-            "Item",
-            "Qty",
-            "Price",
-            "Total"
-        };
+    String[] columns = {"Medicine ID","Item","Qty","Price","Total"};
 
-        tableModel = new DefaultTableModel(
-                columns, 0
-        ) {
-
-            @Override
-            public boolean isCellEditable(
-                    int row,
-                    int column
-            ) {
+    tableModel = new DefaultTableModel(columns, 0) {
+    @Override
+    public boolean isCellEditable(int row,int column) {
                 return false;
             }
         };
 
-        cartTable = new JTable(tableModel);
+    cartTable = new JTable(tableModel);
+    
+    cartTable.setSelectionBackground(LIGHT_GREEN);
+    cartTable.setSelectionForeground(Color.BLACK);
 
-        cartTable.setFont(
-                new Font("Segoe UI", Font.PLAIN, 13)
-        );
+    cartTable.getTableHeader().setBackground(PRIMARY_GREEN);
 
-        cartTable.setRowHeight(24);
+    cartTable.getTableHeader().setForeground(Color.WHITE);
 
-        rightPanel.add(
-                new JScrollPane(cartTable),
-                BorderLayout.CENTER
-        );
+    cartTable.setFont( new Font("Arial", Font.PLAIN, 13));
 
-        JPanel summaryPanel = new JPanel(
-                new GridLayout(4, 2, 5, 5)
-        );
+    cartTable.setRowHeight(26);
+        
 
-        summaryPanel.setBorder(
-                BorderFactory.createEmptyBorder(
-                        10, 10, 10, 10
-                )
-        );
+    rightPanel.add(new JScrollPane(cartTable),BorderLayout.CENTER);
 
-        summaryPanel.add(
-                new JLabel("Subtotal:")
-        );
+    JPanel summaryPanel = new JPanel(new GridLayout(4, 2, 5, 5));
+    
+    summaryPanel.setBackground(LIGHT_BACKGROUND);
 
-        lblSubtotal = new JLabel(
-                currencyFormatter.format(0),
-                SwingConstants.RIGHT
-        );
+    summaryPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        summaryPanel.add(lblSubtotal);
+    summaryPanel.add(new JLabel("Subtotal:"));
 
-        summaryPanel.add(
-                new JLabel("TAX (5%):")
-        );
+    lblSubtotal = new JLabel(currencyFormatter.format(0),SwingConstants.RIGHT);
 
-        lblTax = new JLabel(
-                currencyFormatter.format(0),
-                SwingConstants.RIGHT
-        );
+    summaryPanel.add(lblSubtotal);
 
-        summaryPanel.add(lblTax);
+    summaryPanel.add(new JLabel("TAX (15%):"));
 
-        JLabel lblTotalTag =
-                new JLabel("Total Due:");
+    lblTax = new JLabel(currencyFormatter.format(0),SwingConstants.RIGHT);
 
-        lblTotalTag.setFont(
-                new Font(
-                        "Segoe UI",
-                        Font.BOLD,
-                        16
-                )
-        );
+    summaryPanel.add(lblTax);
 
-        summaryPanel.add(lblTotalTag);
+    JLabel lblTotalTag = new JLabel("Total Due:");
 
-        lblTotal = new JLabel(
-                currencyFormatter.format(0),
-                SwingConstants.RIGHT
-        );
+    lblTotalTag.setFont(new Font( "Arial", Font.BOLD,16));
 
-        lblTotal.setFont(
-                new Font(
-                        "Segoe UI",
-                        Font.BOLD,
-                        16
-                )
-        );
+    summaryPanel.add(lblTotalTag);
 
-        lblTotal.setForeground(
-                new Color(192, 57, 43)
-        );
+    lblTotal = new JLabel(currencyFormatter.format(0),SwingConstants.RIGHT);
 
-        summaryPanel.add(lblTotal);
+    lblTotal.setFont(new Font( "Arial", Font.BOLD, 16));
 
-        JButton btnClear =
-                new JButton("Clear Order");
+    lblTotal.setForeground(DARK_GREEN);
 
-        btnClear.setBackground(
-                new Color(231, 76, 60)
-        );
+    summaryPanel.add(lblTotal);
 
-        btnClear.setForeground(Color.WHITE);
+    JButton btnClear = new JButton("Clear Order");
 
-        btnClear.setFocusPainted(false);
+    btnClear.setBackground( new Color(231, 76, 60));
 
-        btnClear.addActionListener(
-                e -> clearCart()
-        );
+    btnClear.setForeground(Color.WHITE);
 
-        summaryPanel.add(btnClear);
+    btnClear.setFocusPainted(false);
+    btnClear.setBorderPainted(false);
 
-        JButton btnPay =
-                new JButton("Pay");
 
-        btnPay.setBackground(
-                new Color(46, 204, 113)
-        );
+    btnClear.addActionListener(e -> clearCart() );
 
-        btnPay.setForeground(Color.WHITE);
+    summaryPanel.add(btnClear);
 
-        btnPay.setFocusPainted(false);
+    JButton btnPay = new JButton("Pay");
 
-        btnPay.setFont(
-                new Font(
-                        "Segoe UI",
-                        Font.BOLD,
-                        14
-                )
-        );
+    btnPay.setBackground(new Color(46, 204, 113));
 
-        btnPay.addActionListener(
-                e -> processPayment()
-        );
+    btnPay.setForeground(Color.WHITE);
 
-        summaryPanel.add(btnPay);
+    btnPay.setFocusPainted(false);
+    btnPay.setBorderPainted(false);
 
-        rightPanel.add(
-                summaryPanel,
-                BorderLayout.SOUTH
-        );
+    btnPay.setFont(new Font("Arial",Font.BOLD,14));
 
-        add(
-                rightPanel,
-                BorderLayout.EAST
-        );
+    btnPay.addActionListener(e -> processPayment());
+
+    summaryPanel.add(btnPay);
+
+    rightPanel.add(summaryPanel,BorderLayout.SOUTH);
+
+     add(rightPanel,BorderLayout.EAST);
     }
 
-    /*
-    String [][] medicine ={{"Tablet","40"},{"Capsule","30"},{"Syrup","80"},{"Injection","40"},{"Cream","140"}};
- 
-for(String[] med:medicine){
-String name = med[0];
-double price = Double.parseDouble(med[1]);
-JButton medButton = new JButton("<html><center><b>"+name+"</b><br>"+ currencyFormatter.format(price)+ "</center></html>");
-medButton.setFont(new Font("Segoe UI", Font.PLAIN,14));
-medButton.setFocusPainted(false);
-medButton.setBackground(new Color(236,240,241));
-medButton.addActionListener(e -> addToCart(name,price));
-gridPanel.add(medButton);
-
-}    
-JScrollPane itemScroll = new JScrollPane(gridPanel);
-productPanel.add(itemScroll, BorderLayout.CENTER);
-add(productPanel, BorderLayout.CENTER);
-
-JPanel rightPanel = new JPanel(new BorderLayout(10,10));
-rightPanel.setPreferredSize(new Dimension(420,0));
-rightPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY),"Current Order",0,0,new Font("Segoe UI",Font.BOLD, 14)));
-
-String [] columns ={"Item","Qty","Price","Total"};
-tableModel = new DefaultTableModel(columns,0){
-    @Override
-    public boolean isCellEditable(int row, int column){return false;}
-    
-};
-cartTable = new JTable(tableModel);
-cartTable.setFont(new Font("Segoe UI",Font.PLAIN,13));
-cartTable.setRowHeight(24);
-rightPanel.add(new JScrollPane(cartTable),BorderLayout.CENTER);
-
-JPanel summaryPanel = new JPanel(new GridLayout(4,2,5,5));
-summaryPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-summaryPanel.add(new JLabel("Subtotal"));
-lblSubtotal = new JLabel(currencyFormatter.format(0),SwingConstants.RIGHT);
-summaryPanel.add(lblSubtotal);
-
-summaryPanel.add(new JLabel("TAX (5%):"));
-lblTax = new JLabel(currencyFormatter.format(0),SwingConstants.RIGHT);
-summaryPanel.add(lblTax);
-
-JLabel lblTotalTag = new JLabel("Total Due:");
-lblTotalTag.setFont(new Font("Segoe UI",Font.BOLD, 16));
-summaryPanel.add(lblTotalTag);
-
-lblTotal = new JLabel(currencyFormatter.format(0),SwingConstants.RIGHT);
-lblTotal.setFont(new Font("Segoe UI",Font.BOLD,16));
-lblTotal.setForeground(new Color(192,57,43));
-summaryPanel.add(lblTotal);
-
-JButton btnClear = new JButton("Clear Order");
-btnClear.setBackground(new Color(231,76,60));
-btnClear.setForeground(Color.WHITE);
-btnClear.setFocusPainted(false);
-btnClear.addActionListener(e -> clearCart());
-summaryPanel.add(btnClear);
-
-JButton btnPay = new JButton("Pay");
-btnPay.setBackground(new Color(46,204,113));
-btnPay.setForeground(Color.WHITE);
-btnPay.setFocusPainted(false);
-btnPay.setFont(new Font("Segoe UI",Font.BOLD,14));
-btnPay.addActionListener(e -> clearCart());
-summaryPanel.add(btnPay);
-
-rightPanel.add(summaryPanel, BorderLayout.SOUTH);
-add(rightPanel, BorderLayout.EAST);
-    }*/
 
 private void addToCart(int medicineId,String name, double price,int stock){
-/*
-    if(cartItems.containsKey(medicineId)){
-int rowIndex = cartItems.get(name);
-int currentQty = (int) tableModel.getValueAt(rowIndex, 1);
-int newQty = currentQty +1;
-double newTotal = price * newQty;
-tableModel.setValueAt(newQty, rowIndex, 1);
-tableModel.setValueAt(currencyFormatter.format(newTotal), rowIndex, 3);
-}else{
-int newRowIndex = tableModel.getRowCount();
-tableModel.addRow(new Object[]{name,1,currencyFormatter.format(price),currencyFormatter.format(price)});
-cartItems.put(name, newRowIndex);
-}
-subtotal +=price;
-updateTotals();*/
- if (cartItems.containsKey(medicineId)) {
 
-            int rowIndex =
-                    cartItems.get(medicineId);
+    if (cartItems.containsKey(medicineId)) {
 
-            int currentQty =
-                    (int) tableModel.getValueAt(
-                            rowIndex, 2
-                    );
+        int rowIndex = cartItems.get(medicineId);
 
-            if (currentQty >= stock) {
+        int currentQty = (int) tableModel.getValueAt(rowIndex, 2);
 
-                JOptionPane.showMessageDialog(
+        if (currentQty >= stock) {
+            
+            JOptionPane.showMessageDialog(
                         this,
                         "Not enough stock available.",
                         "Stock Warning",
@@ -358,49 +201,23 @@ updateTotals();*/
                 return;
             }
 
-            int newQty =
-                    currentQty + 1;
+        int newQty =currentQty + 1;
 
-            double newTotal =
-                    price * newQty;
+        double newTotal = price * newQty;
 
-            tableModel.setValueAt(
-                    newQty,
-                    rowIndex,
-                    2
-            );
+        tableModel.setValueAt(newQty,rowIndex,2);
 
-            tableModel.setValueAt(
-                    currencyFormatter.format(
-                            newTotal
-                    ),
-                    rowIndex,
-                    4
-            );
+        tableModel.setValueAt(currencyFormatter.format(newTotal),rowIndex,4);
 
-        } else {
+        }else{
 
-            int newRowIndex =
-                    tableModel.getRowCount();
+        int newRowIndex = tableModel.getRowCount();
 
-            tableModel.addRow(
-                    new Object[]{
-                        medicineId,
-                        name,
-                        1,
-                        currencyFormatter.format(
-                                price
-                        ),
-                        currencyFormatter.format(
-                                price
-                        )
-                    }
-            );
+        tableModel.addRow( new Object[]{medicineId,name,1,currencyFormatter.format(price),
+            currencyFormatter.format(price)});
 
-            cartItems.put(
-                    medicineId,
-                    newRowIndex
-            );
+        cartItems.put(medicineId,
+                    newRowIndex);
         }
 
         subtotal += price;
@@ -408,16 +225,9 @@ updateTotals();*/
         updateTotals();
     }
 
-private void connectDatabase(){
-    /*
-try{
-conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/healthfirstdb,root,Mekana@12345");
-Statement stmt = conn.createStatement();
 
-stmt.execute("CREATE TABLE IF NOT EXISTS sales("+"sale_id INT PRIMARY KEY AUTO_INCREMENT," +"sale_date: TIMESTAMP, DEFAULT CURRENT_TIMESTAMP "+"total_amount: DECIMAL(10,2)"+"user_id: INT, FK )");
-}catch(Exception ex ){
-JOptionPane.showMessageDialog(this, "Database Error:" + ex.getMessage());
-*/
+private void connectDatabase(){
+    
      try {
 
             conn = DriverManager.getConnection(
@@ -449,60 +259,51 @@ JOptionPane.showMessageDialog(this, "Database Error:" + ex.getMessage());
                 + "ORDER BY name";
 
         try (
-                PreparedStatement pst =
-                        conn.prepareStatement(sql);
+                PreparedStatement pst = conn.prepareStatement(sql);
 
-                ResultSet rs =
-                        pst.executeQuery()
+                ResultSet rs = pst.executeQuery()
         ) {
 
             while (rs.next()) {
 
-                int medicineId =
-                        rs.getInt("medicine_id");
+            int medicineId = rs.getInt("medicine_id");
 
-                String name =
-                        rs.getString("name");
+            String name = rs.getString("name");
 
-                double price =
-                        rs.getDouble("price");
+            double price = rs.getDouble("price");
 
-                int stock =
-                        rs.getInt("quantity_in_stock");
+            int stock = rs.getInt("quantity_in_stock");
 
-                JButton medButton =
-                        new JButton(
-                                "<html><center>"
+            JButton medButton = new JButton(
+                                "<html>"
                                 + "<b>" + name + "</b><br>"
                                 + currencyFormatter.format(price)
                                 + "<br>Stock: " + stock
-                                + "</center></html>"
+                                + "</center>"
                         );
 
-                medButton.setFont(
-                        new Font(
-                                "Segoe UI",
-                                Font.PLAIN,
-                                14
-                        )
-                );
+            medButton.setFont(new Font("Arial",Font.PLAIN,13));
+            
+            medButton.setBackground(LIGHT_GREEN);
+            
+            medButton.setForeground(DARK_GREEN);
+            medButton.setFocusPainted(false);
+            medButton.setOpaque(true);
+            medButton.setHorizontalAlignment(
+            SwingConstants.LEFT
+);
+            medButton.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(PRIMARY_GREEN,1
+                ),BorderFactory.createEmptyBorder(5,10,5,10)));
+         
+            medButton.setFocusPainted(false);
+              
 
-                medButton.setFocusPainted(false);
-
-                medButton.setBackground(
-                        new Color(236, 240, 241)
-                );
-
-                medButton.addActionListener(
-                        e -> addToCart(
-                                medicineId,
-                                name,
-                                price,
-                                stock
-                        )
-                );
-
-                gridPanel.add(medButton);
+            medButton.addActionListener(
+                      e -> addToCart(medicineId,name,price,stock));
+            gridPanel.add(medButton);
+            gridPanel.add(
+            Box.createRigidArea(new Dimension(0,3)));
             }
 
         } catch (SQLException ex) {
@@ -550,47 +351,14 @@ JOptionPane.showMessageDialog(this, "Database Error:" + ex.getMessage());
     return;
     }
     
-    String receiptMessage = String.format(
-            "Transaction Complete!\n"
-                    + "\nTotal Paid: %s"
-                    + "\n Thank you for your business!",currencyFormatter.format(total));
-    JOptionPane.showMessageDialog(this, 
-            receiptMessage,"Success",
-            JOptionPane.INFORMATION_MESSAGE);
+    String receiptMessage = String.format("Transaction Complete!\n\nTotal Paid: %s\n Thank you for your business!",
+            currencyFormatter.format(total));
+    JOptionPane.showMessageDialog(this, receiptMessage,"Success",JOptionPane.INFORMATION_MESSAGE);
     clearCart();
     }
     
     private boolean saveSaleToDatabase(double total){
-        /*
-    try{
-        Statement idStmt = conn.createStatement();
-        ResultSet idRs = idStmt.executeQuery("SELECT COALESCE(MAX(transaction_id),0) +1 AS sales_id FROM sales");
-        int transactionId = 1;
-        if(idRs.next()){
-        transactionId =  idRs.getInt("sales_id");
-        }
-        String sql = "INSERT INTO sales(sale_id,sale_date,total_amount,user_id)";
-        PreparedStatement pst = conn.prepareStatement(sql);
-        for(int row = 0; row<tableModel.getRowCount(); row++){
-        String itemName = tableModel.getValueAt(row, 0).toString();
-            int qty = (int) tableModel.getValueAt(row, 1);
-            String priceStr = tableModel.getValueAt(row, 2).toString().replaceAll("[^0-9.]", "");
-            String totalStr = tableModel.getValueAt(row, 3).toString().replaceAll("[^0-9.]", "");
-            double unitPrice = Double.parseDouble(priceStr);
-            double lineTotal = Double.parseDouble(totalStr);
-
-            pst.setInt(1, transactionId);
-            pst.setString(2, itemName);
-            pst.setInt(3, qty);
-            pst.setDouble(4, unitPrice);
-            pst.setDouble(5, lineTotal);
-            pst.executeUpdate();
-        }
-    
-    }catch(Exception ex){
-    JOptionPane.showMessageDialog(this,"Error saving sale:" + ex.getMessage());
-    }
-    }*/
+     
         String saleSql =
                 "INSERT INTO sales "
                 + "(total_amount, user_id) "
@@ -610,113 +378,62 @@ JOptionPane.showMessageDialog(this, "Database Error:" + ex.getMessage());
 
            
             try (
-                    PreparedStatement saleStmt =
-                            conn.prepareStatement(
-                                    saleSql,
-                                    Statement.RETURN_GENERATED_KEYS
-                            )
+            PreparedStatement saleStmt =conn.prepareStatement(saleSql,Statement.RETURN_GENERATED_KEYS)
             ) {
 
-                saleStmt.setDouble(
-                        1,
-                        total
-                );
+            saleStmt.setDouble(1,total);
 
-                saleStmt.setInt(
-                        2,
-                        userId
-                );
+            saleStmt.setInt(2,userId);
 
-                saleStmt.executeUpdate();
+            saleStmt.executeUpdate();
 
                 try (
-                        ResultSet generatedKeys =
-                                saleStmt.getGeneratedKeys()
+                ResultSet generatedKeys = saleStmt.getGeneratedKeys()
                 ) {
 
-                    if (!generatedKeys.next()) {
+                if (!generatedKeys.next()) {
 
-                        conn.rollback();
+                    conn.rollback();
 
-                        JOptionPane.showMessageDialog(
-                                this,
-                                "Could not create sale.",
-                                "Database Error",
-                                JOptionPane.ERROR_MESSAGE
-                        );
+                    JOptionPane.showMessageDialog(this,"Could not create sale.","Database Error",
+                            JOptionPane.ERROR_MESSAGE);
 
                         return false;
                     }
 
-                    saleId =
-                            generatedKeys.getInt(1);
+                saleId =generatedKeys.getInt(1);
                 }
             }
 
             
             try (
-                    PreparedStatement itemStmt =
-                            conn.prepareStatement(itemSql)
+            PreparedStatement itemStmt = conn.prepareStatement(itemSql)
             ) {
 
-                for (
-                        int row = 0;
-                        row < tableModel.getRowCount();
-                        row++
-                ) {
+            for(int row = 0;row < tableModel.getRowCount();row++) {
 
-                    int medicineId =
-                            Integer.parseInt(
-                                    tableModel.getValueAt(
-                                            row, 0
-                                    ).toString()
-                            );
+            int medicineId =Integer.parseInt(tableModel.getValueAt(row, 0).toString());
 
-                    int quantity =
-                            (int) tableModel.getValueAt(
-                                    row, 2
-                            );
+            int quantity =(int) tableModel.getValueAt(row, 2);
 
-                    String priceText =
-                            tableModel.getValueAt(
-                                    row, 3
-                            ).toString();
+            String priceText =tableModel.getValueAt(row, 3).toString();
 
-                    priceText =
-                            priceText.replaceAll(
-                                    "[^0-9.]",
-                                    ""
-                            );
+            priceText =priceText.replaceAll("[^0-9.]","");
 
-                    double price =
-                            Double.parseDouble(
-                                    priceText
-                            );
+            double price = Double.parseDouble(priceText);
 
-                    itemStmt.setInt(
-                            1,
-                            saleId
-                    );
+            itemStmt.setInt(1,saleId);
 
-                    itemStmt.setInt(
-                            2,
-                            medicineId
-                    );
+            itemStmt.setInt(2,medicineId);
 
-                    itemStmt.setInt(
-                            3,
-                            quantity
-                    );
+            itemStmt.setInt(3, quantity);
 
-                    itemStmt.setDouble(
-                            4,
-                            price
-                    );
+            itemStmt.setDouble(4,price);
 
-                    itemStmt.addBatch();
-                }
+            itemStmt.addBatch();
+            }
 
-                itemStmt.executeBatch();
+            itemStmt.executeBatch();
             }
 
             
@@ -727,39 +444,21 @@ JOptionPane.showMessageDialog(this, "Database Error:" + ex.getMessage());
                     + "WHERE medicine_id = ?";
 
             try (
-                    PreparedStatement stockStmt =
-                            conn.prepareStatement(stockSql)
+            PreparedStatement stockStmt = conn.prepareStatement(stockSql)
             ) {
 
-                for (
-                        int row = 0;
-                        row < tableModel.getRowCount();
-                        row++
+                for (int row = 0;row < tableModel.getRowCount();row++
                 ) {
 
-                    int medicineId =
-                            Integer.parseInt(
-                                    tableModel.getValueAt(
-                                            row, 0
-                                    ).toString()
-                            );
+                int medicineId =Integer.parseInt(tableModel.getValueAt(row, 0).toString());
 
-                    int quantity =
-                            (int) tableModel.getValueAt(
-                                    row, 2
-                            );
+                int quantity =(int) tableModel.getValueAt(row, 2);
 
-                    stockStmt.setInt(
-                            1,
-                            quantity
-                    );
+                stockStmt.setInt(1,quantity);
 
-                    stockStmt.setInt(
-                            2,
-                            medicineId
-                    );
+                stockStmt.setInt(2,medicineId);
 
-                    stockStmt.addBatch();
+                stockStmt.addBatch();
                 }
 
                 stockStmt.executeBatch();
@@ -772,7 +471,7 @@ JOptionPane.showMessageDialog(this, "Database Error:" + ex.getMessage());
         } catch (SQLException ex) {
 
             try {
-                conn.rollback();
+            conn.rollback();
             } catch (SQLException rollbackEx) {
                
             }
