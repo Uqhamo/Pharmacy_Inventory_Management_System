@@ -20,135 +20,105 @@ public class RegistrationSystem extends JFrame {
     private JComboBox<String> cmbRole;
     private JButton registerButton;
     private JButton btnBack;
+    private final Color PRIMARY_GREEN = new Color(39,174,96);
+    private final Color DARK_GREEN = new Color(30,123,73);
+    private final Color LIGHT_GREEN = new Color(232,245,233);
+    private final Color RED = new Color(192,57,43);
+    private final Color LIGHT_BACKGROUND = new Color(245,250,247);
     
     public RegistrationSystem(){
     setTitle("HealthFirst -User Registration");
     setSize(450, 420);
-     setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-     setLocationRelativeTo(null);
-     setLayout(new BorderLayout(10,10));
+    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    setLocationRelativeTo(null);
+    setLayout(new BorderLayout(10,10));
+    getContentPane().setBackground(LIGHT_BACKGROUND);
+
     
-     JPanel headerPanel = new JPanel();
-     headerPanel.setBackground(new Color(41,128,185));
+    JPanel headerPanel = new JPanel();
+    headerPanel.setBackground(PRIMARY_GREEN);
+    headerPanel.setBorder( BorderFactory.createEmptyBorder(20, 20, 20, 20));
     
-      JLabel lblTitle =
-                new JLabel("HealthFirst Registration");
+    JLabel lblTitle = new JLabel("HealthFirst Registration");
 
-        lblTitle.setForeground(Color.WHITE);
+    lblTitle.setForeground(Color.WHITE);
 
-        lblTitle.setFont(
-                new Font(
-                        "Arial",
-                        Font.BOLD,
-                        20
-                )
-        );
+    lblTitle.setFont(new Font("Arial",Font.BOLD,20));
 
-        headerPanel.add(lblTitle);
+    headerPanel.add(lblTitle);
 
-        add(headerPanel, BorderLayout.NORTH);
+    add(headerPanel, BorderLayout.NORTH);
 
        
 
-        JPanel formPanel =
-                new JPanel(
-                        new GridLayout(5, 2, 10, 15)
-                );
+    JPanel formPanel = new JPanel(new GridLayout(5, 2, 10, 15) );
+    formPanel.setBackground(LIGHT_BACKGROUND);
 
-        formPanel.setBorder(
-                BorderFactory.createEmptyBorder(
-                        30, 30, 30, 30
-                )
-        );
+    formPanel.setBorder( BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
        
-        formPanel.add(
-                new JLabel("Full Name:")
-        );
+    formPanel.add(new JLabel("Full Name:") );
 
-        txtFullName = new JTextField();
-
-        formPanel.add(txtFullName);
+    txtFullName = new JTextField();
+    txtFullName.setBorder( BorderFactory.createLineBorder(PRIMARY_GREEN));
+    formPanel.add(txtFullName);
 
         
-        formPanel.add(
-                new JLabel("Username:")
-        );
+    formPanel.add(new JLabel("Username:"));
 
-        txtUsername = new JTextField();
-
-        formPanel.add(txtUsername);
+    txtUsername = new JTextField();
+    txtUsername.setBorder(BorderFactory.createLineBorder( PRIMARY_GREEN) );
+    formPanel.add(txtUsername);
 
         
-        formPanel.add(
-                new JLabel("Password:")
-        );
+    formPanel.add(new JLabel("Password:"));
 
-        txtPassword =
-                new JPasswordField();
-
-        formPanel.add(txtPassword);
+    txtPassword =new JPasswordField();
+    txtPassword.setBorder(BorderFactory.createLineBorder( PRIMARY_GREEN));
+    formPanel.add(txtPassword);
 
         
-        formPanel.add(
-                new JLabel("Confirm Password:")
-        );
+    formPanel.add(new JLabel("Confirm Password:"));
 
-        txtConfirmPassword =
-                new JPasswordField();
-
-        formPanel.add(txtConfirmPassword);
+    txtConfirmPassword =new JPasswordField();
+        
+    txtConfirmPassword.setBorder(BorderFactory.createLineBorder(PRIMARY_GREEN,1));
+    formPanel.add(txtConfirmPassword);
 
         
-        formPanel.add(
-                new JLabel("Role:")
-        );
+    formPanel.add(new JLabel("Role:"));
 
-        cmbRole = new JComboBox<>(new String [] {"Admin","Cashier"});
-        /*
-        JLabel lblRole =
-                
-                new JLabel("Cashier");
+    cmbRole = new JComboBox<>(new String [] {"Admin","Cashier"});
+       
+    formPanel.add(cmbRole);
 
-        lblRole.setFont(
-                new Font(
-                        "Arial",
-                        Font.BOLD,
-                        14
-                )
-        );
-*/
-        formPanel.add(cmbRole);
-
-        add(
-                formPanel,
-                BorderLayout.CENTER
-        );
+    add(formPanel,BorderLayout.CENTER);
+        
 
         
 
-        JPanel buttonPanel =
-                new JPanel(
-                        new FlowLayout(
-                                FlowLayout.CENTER,
-                                10,
-                                10
-                        )
-                );
+        JPanel buttonPanel =new JPanel( new FlowLayout(FlowLayout.CENTER, 10,15));
+        
+        buttonPanel.setBackground(LIGHT_BACKGROUND);
+        registerButton = new JButton("Register");
+        registerButton.setBackground(PRIMARY_GREEN);
+        registerButton.setForeground(Color.WHITE);
+        registerButton.setFont(new Font("Arial", Font.BOLD, 14));
+        registerButton.setFocusPainted(false);
+        registerButton.setBorderPainted(false);
+        registerButton.setPreferredSize(new Dimension(130, 40));
 
-        registerButton =
-                new JButton("Register");
-
-        btnBack =
-                new JButton("Back");
-
+        btnBack =new JButton("Back");
+        btnBack.setBackground(DARK_GREEN);
+        btnBack.setForeground(Color.WHITE);
+        btnBack.setFont(new Font("Arial", Font.BOLD, 14));
+        btnBack.setFocusPainted(false);
+        btnBack.setBorderPainted(false);
+        btnBack.setPreferredSize(new Dimension(130, 40));
         buttonPanel.add(registerButton);
         buttonPanel.add(btnBack);
 
-        add(
-                buttonPanel,
-                BorderLayout.SOUTH
-        );
+        add(buttonPanel,BorderLayout.SOUTH);
 
        
 
@@ -169,27 +139,19 @@ public class RegistrationSystem extends JFrame {
 
     private void registerUser() {
 
-        String fullName =
-                txtFullName.getText().trim();
+        String fullName =txtFullName.getText().trim();
 
-        String username =
-                txtUsername.getText().trim();
+        String username =txtUsername.getText().trim();
 
-        String password =
-                new String(
-                        txtPassword.getPassword()
-                );
+        String password =new String(txtPassword.getPassword());
 
-        String confirmPassword =
-                new String(
-                        txtConfirmPassword.getPassword()
-                );
+        String confirmPassword =new String(txtConfirmPassword.getPassword());
 
         
         String role = "Cashier";
 
         
-        if (fullName.isEmpty()
+        if (fullName.isEmpty() 
                 || username.isEmpty()
                 || password.isEmpty()
                 || confirmPassword.isEmpty()) {
@@ -236,20 +198,14 @@ public class RegistrationSystem extends JFrame {
                 + "WHERE username = ?";
 
         try (
-                Connection conn =
-                        DBConnection.getConnection();
+            Connection conn = DBConnection.getConnection();
 
-                PreparedStatement checkStmt =
-                        conn.prepareStatement(checkSql)
+            PreparedStatement checkStmt =conn.prepareStatement(checkSql)
         ) {
 
-            checkStmt.setString(
-                    1,
-                    username
-            );
+            checkStmt.setString(1,username);
 
-            ResultSet rs =
-                    checkStmt.executeQuery();
+            ResultSet rs = checkStmt.executeQuery();
 
             if (rs.next()) {
 
@@ -271,29 +227,16 @@ public class RegistrationSystem extends JFrame {
                     + "VALUES (?, ?, ?, ?)";
 
             try (
-                    PreparedStatement insertStmt =
-                            conn.prepareStatement(insertSql)
+                PreparedStatement insertStmt = conn.prepareStatement(insertSql)
             ) {
 
-                insertStmt.setString(
-                        1,
-                        username
-                );
+                insertStmt.setString(1,username);
 
-                insertStmt.setString(
-                        2,
-                        password
-                );
+                insertStmt.setString(2,password);
 
-                insertStmt.setString(
-                        3,
-                        role
-                );
+                insertStmt.setString(3,role);
 
-                insertStmt.setString(
-                        4,
-                        fullName
-                );
+                insertStmt.setString(4,fullName);
 
                 insertStmt.executeUpdate();
 
@@ -307,7 +250,7 @@ public class RegistrationSystem extends JFrame {
 
                 clearFields();
 
-                // Close registration window
+              
                 dispose();
             }
 
