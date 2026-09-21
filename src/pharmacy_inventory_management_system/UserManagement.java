@@ -22,61 +22,86 @@ private JTextField txtFullName;
 private DefaultTableModel tableModel;
     
 private JButton btnAdd,btnUpdate,btnDelete,btnClear;
-
+private final Color PRIMARY_GREEN = new Color(39,174,96);
+private final Color DARK_GREEN = new Color(30,123,73);
+private final Color LIGHT_GREEN = new Color(232,245,233);
+private final Color RED = new Color(192,57,43);
+private final Color LIGHT_BACKGROUND = new Color(245,250,247);
     
 public UserManagement(){
-setTitle("HealthFirst User Management System");
-    setSize(650, 450);
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setTitle("HealthFirst User Management System");
+
+    setSize(750, 500);
+    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     setLocationRelativeTo(null);
     setLayout(new BorderLayout(10,10));
+    getContentPane().setBackground(LIGHT_BACKGROUND);
+
     
     JPanel panelForm = new JPanel(new GridLayout(4,2,5,5));
-    panelForm.setBorder(BorderFactory.createTitledBorder("Cashier Details"));
+    panelForm.setBackground(LIGHT_BACKGROUND);
+    panelForm.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(PRIMARY_GREEN,2),"User Details"));
     
     panelForm.add(new JLabel("Full Name:"));
     txtFullName = new JTextField();
+    
+    txtFullName.setBorder(BorderFactory.createLineBorder(PRIMARY_GREEN));
     panelForm.add(txtFullName);
     
     panelForm.add(new JLabel("Username:"));
     txtUsername = new JTextField();
+    txtUsername.setBorder(BorderFactory.createLineBorder(PRIMARY_GREEN));
+
     panelForm.add(txtUsername);
     
     panelForm.add(new JLabel("Password:"));
     txtPassword = new JPasswordField();
+    txtPassword.setBorder(BorderFactory.createLineBorder(PRIMARY_GREEN));
+
     panelForm.add(txtPassword);
     
     panelForm.add(new JLabel("Role:"));
-    cmbRole = new JComboBox<>(new String[]{"Admin",
-        "Cashier"});
+    cmbRole = new JComboBox<>(new String[]{"Admin","Cashier"});
     panelForm.add(cmbRole);
     
     
     JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER,10,10));
-     btnAdd = new JButton("Add");
-     btnUpdate = new JButton("Update");
-     btnDelete = new JButton("Delete");
-     btnClear = new JButton("Clear");
-
     
-    panelButtons.add(btnAdd);
-    panelButtons.add(btnUpdate);
-    panelButtons.add(btnDelete);
-    panelButtons.add(btnClear);
+    panelButtons.setBackground(LIGHT_BACKGROUND);
+    btnAdd = new JButton("Add");
+    btnUpdate = new JButton("Update");
+    btnDelete = new JButton("Delete");
+    btnClear = new JButton("Clear");
+     
+    styleButton(btnAdd, PRIMARY_GREEN);
+    styleButton(btnUpdate, DARK_GREEN);
+    styleButton(btnDelete, RED);
+    styleButton(btnClear, DARK_GREEN);
+
     
     
     JPanel panelNorth = new JPanel(new BorderLayout());
-     
+    panelNorth.setBackground(LIGHT_BACKGROUND);
+
     panelNorth.add(panelForm,BorderLayout.CENTER);
     panelNorth.add(panelButtons,BorderLayout.SOUTH);
     add(panelNorth, BorderLayout.NORTH);
     
     tableModel = new DefaultTableModel(new String []{"User ID","Full Name","Username","Password","Role"},0);
     tableCashiers = new JTable(tableModel);
+    tableCashiers.setSelectionBackground(LIGHT_GREEN);
+    tableCashiers.setSelectionForeground(Color.BLACK);
+    tableCashiers.getTableHeader().setBackground(PRIMARY_GREEN);
+
+    tableCashiers.getTableHeader().setForeground(Color.WHITE);
+
+    tableCashiers.getTableHeader().setFont(new Font("Arial",Font.BOLD,13 )); 
+
+    
     add(new JScrollPane(tableCashiers),BorderLayout.CENTER);
     
-    //tableModel.addRow(new Object [] {"cashier1","pass123"});
-    //tableModel.addRow(new Object [] {"alice_c","secret456"});
+    
     
     
     btnAdd.addActionListener(new ActionListener(){
@@ -112,8 +137,7 @@ setTitle("HealthFirst User Management System");
     }catch(java.sql.SQLException ex){
     JOptionPane.showMessageDialog(UserManagement.this, "Error adding user:" + ex.getMessage(),"Database Error", JOptionPane.ERROR_MESSAGE);
     }
-    //tableModel.addRow(new Object []{user,pass});
-    //clearFields();
+    
     }
     });
 
@@ -127,16 +151,13 @@ setTitle("HealthFirst User Management System");
                JOptionPane.WARNING_MESSAGE);
     return;
        }
-       int userId = Integer.parseInt(tableModel.getValueAt(selectedrow, 0).toString());
-       String fullName = txtFullName.getText().trim();
-       String user = txtUsername.getText().trim();
-       String pass = new String(txtPassword.getPassword()).trim();
-       String role = cmbRole.getSelectedItem().toString();
-       
-       //tableModel.setValueAt(user, selectedrow, 0);
-       //tableModel.setValueAt(pass, selectedrow, 1);
-       //clearFields();
-   String sql = "UPDATE users SET "
+    int userId = Integer.parseInt(tableModel.getValueAt(selectedrow, 0).toString());
+    String fullName = txtFullName.getText().trim();
+    String user = txtUsername.getText().trim();
+    String pass = new String(txtPassword.getPassword()).trim();
+    String role = cmbRole.getSelectedItem().toString();
+     
+    String sql = "UPDATE users SET "
                 + "full_name = ?, "
                 + "username = ?, "
                 + "password = ?, "
@@ -162,7 +183,7 @@ setTitle("HealthFirst User Management System");
             clearFields();
             loadUsers();
 
-        } catch (java.sql.SQLException ex) {
+        }catch(java.sql.SQLException ex) {
 
             JOptionPane.showMessageDialog(
                     UserManagement.this,
@@ -211,8 +232,7 @@ setTitle("HealthFirst User Management System");
                     JOptionPane.ERROR_MESSAGE
             );
        
-       //tableModel.removeRow(selectedrow);
-       //clearFields();
+       
 }
     } });
 
@@ -220,7 +240,7 @@ btnClear.addActionListener(e-> clearFields());
 
 tableCashiers.addMouseListener(new MouseAdapter(){
  @Override
- public void mouseClicked(MouseEvent e){
+public void mouseClicked(MouseEvent e){
 int selectedrow =tableCashiers.getSelectedRow();
 if(selectedrow !=-1){
     
@@ -238,6 +258,20 @@ cmbRole.setSelectedItem(tableModel.getValueAt(selectedrow, 4).toString());
 });
 loadUsers();
 
+}
+private void styleButton(
+        
+    JButton button,Color color) {
+    
+    button.setBackground(color);
+    button.setForeground(Color.WHITE);
+
+    button.setFont(new Font( "Arial",Font.BOLD,13));
+
+    button.setFocusPainted(false);
+    button.setBorderPainted(false);
+
+    button.setPreferredSize(new Dimension(100, 35));
 }
 private void loadUsers() {
 
