@@ -10,8 +10,9 @@ import java.awt.*;
  * @author uqham
  */
 public class CashierDashboard extends JFrame {
-    
-    public CashierDashboard(){
+    private int userId;
+    public CashierDashboard( int userId){
+        this.userId = userId;
     setTitle("HealthFirst");
     setSize(500, 450);
      setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -27,14 +28,14 @@ public class CashierDashboard extends JFrame {
  
  
  JButton btnPOS = new JButton("Point of Sale");
- btnPOS.addActionListener(e-> new POSsystem().setVisible(true));
+ btnPOS.addActionListener(e-> new POSsystem(userId).setVisible(true));
  
  
  JButton btnBilling = new JButton("Billing");
  btnBilling.addActionListener(e-> new BillingSystem().setVisible(true));
  
  JButton btnStock = new JButton("Stock Check");
- btnStock.addActionListener(e-> new MedicineManagement().setVisible(true));
+ btnStock.addActionListener(e-> new StockCheck().setVisible(true));
     
  panelButtons.add(btnPOS);
   panelButtons.add(btnBilling);
