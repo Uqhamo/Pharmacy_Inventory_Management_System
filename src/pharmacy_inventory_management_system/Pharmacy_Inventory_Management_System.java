@@ -154,9 +154,10 @@ public class Pharmacy_Inventory_Management_System {
     public static void main(String[] args) {
         // TODO code application logic here
         SwingUtilities.invokeLater(()-> {
-        new LoginSystem().setVisible(true);
+        new HomePage().setVisible(true);
     
     });
+        /*
         
         SwingUtilities.invokeLater(() -> {
         new BillingSystem().setVisible(true);
@@ -177,6 +178,7 @@ public class Pharmacy_Inventory_Management_System {
          SwingUtilities.invokeLater(() -> {
         new UserManagement().setVisible(true);
         });
+*/
     }
     
 }
