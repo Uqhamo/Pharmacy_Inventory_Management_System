@@ -71,7 +71,7 @@ setTitle("HealthFirst User Management System");
     panelNorth.add(panelButtons,BorderLayout.SOUTH);
     add(panelNorth, BorderLayout.NORTH);
     
-    tableModel = new DefaultTableModel(new String []{"User ID","Full Name","Username","Password","Roel"},0);
+    tableModel = new DefaultTableModel(new String []{"User ID","Full Name","Username","Password","Role"},0);
     tableCashiers = new JTable(tableModel);
     add(new JScrollPane(tableCashiers),BorderLayout.CENTER);
     
