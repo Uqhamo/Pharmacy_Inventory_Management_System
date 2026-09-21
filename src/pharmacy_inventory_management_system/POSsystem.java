@@ -30,7 +30,7 @@ public class POSsystem extends JFrame {
     
     private HashMap<Integer, Integer> cartItems = new HashMap<>();
     private NumberFormat currencyFormatter = 
-            NumberFormat.getCurrencyInstance(Locale.US);
+            NumberFormat.getCurrencyInstance( new Locale("en","ZA"));
     private int userId;
     public POSsystem(int userId){
      
