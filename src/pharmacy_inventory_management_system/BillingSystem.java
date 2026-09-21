@@ -67,6 +67,7 @@ panelReceipt.setBorder(BorderFactory.createTitledBorder("Invoice Receipt"));
 txtReceipt = new JTextArea();
 txtReceipt.setEditable(false);
 txtReceipt.setFont(new Font("Monospaced",Font.PLAIN,12));
+JScrollPane scrollPane = new JScrollPane(txtReceipt);
 panelReceipt.add(scrollPane, BorderLayout.CENTER);
 
 JPanel panelReceiptActions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -136,9 +137,9 @@ try{
      receipt.append("----------------------\n");
      receipt.append(String.format("%-20s %-10s %-10s\n","Item Name", "QTY","Price"));
      receipt.append("----------------------\n");
-     receipt.append(String.format("%-20s %10d $%-9.2f\n",itemName,qty,price));
+     receipt.append(String.format("%-20s %10d R%-9.2f\n",itemName,qty,price));
      receipt.append("----------------------\n");
-     receipt.append(String.format("Total Amount Due: $%-9.2f\n", totalAmount));
+     receipt.append(String.format("Total Amount Due: R%-9.2f\n", totalAmount));
      receipt.append("----------------------\n");
      receipt.append(" Thank You For Your Business!\n");
      
@@ -167,7 +168,7 @@ JOptionPane.showMessageDialog(this, "Quantity must be an Interger and Price must
  int userSelection = fileChooser.showSaveDialog(this);
  
  if(userSelection == JFileChooser.APPROVE_OPTION){
- java.io.File = fileChooser.getSelectedFile();
+ java.io.File fileToSave = fileChooser.getSelectedFile();
  String filePath = fileToSave.getAbsolutePath();
  if(!filePath.endsWith(".txt")){
  filePath +=".txt";
@@ -194,8 +195,8 @@ JOptionPane.showMessageDialog(this, "Quantity must be an Interger and Price must
       }else{
       JOptionPane.showMessageDialog(this, "Printing Cancelled","Printer Job",JOptionPane.WARNING_MESSAGE);
       }
-  }catch(Exception pEx){
-  JOptionPane.showMessageDialog(this, "Printing Error:"+ pEx.getMessage(),"Printer Error",JOptionPane.ERROR_MESSAGE);
+  }catch(Exception ex){
+  JOptionPane.showMessageDialog(this, "Printing Error:"+ ex.getMessage(),"Printer Error",JOptionPane.ERROR_MESSAGE);
   
   }
  }
