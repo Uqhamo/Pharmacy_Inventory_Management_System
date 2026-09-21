@@ -13,13 +13,17 @@ import java.awt.event.*;
  */
 public class SupplierManagement extends JFrame {
     
-    private JTextField txtId,
-            txtName,txtPhone
-            ,txtEmail,txtContactPerson;
+    private JTextField txtId,txtName,txtPhone,txtEmail,txtContactPerson;
     private JTextArea txtAddress;
     private JTable table;
     private DefaultTableModel tableModel;
     private JButton btnAdd,btnUpdate,btnDelete,btnClear;
+
+    private final Color PRIMARY_GREEN = new Color(39,174,96);
+    private final Color DARK_GREEN = new Color(30,123,73);
+    private final Color LIGHT_GREEN = new Color(232,245,233);
+    private final Color RED = new Color(192,57,43);
+    private final Color LIGHT_BACKGROUND = new Color(245,250,247);
 
     public SupplierManagement(){
     setTitle("HealthFirst Supplier Management System");
@@ -27,9 +31,12 @@ public class SupplierManagement extends JFrame {
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setLocationRelativeTo(null);
     setLayout(new BorderLayout(10,10));
+    getContentPane().setBackground(LIGHT_BACKGROUND);
+
     
     JPanel panelForm = new JPanel(new GridLayout(5,2,5,5));
-    panelForm.setBorder(BorderFactory.createTitledBorder(
+    panelForm.setBackground(LIGHT_BACKGROUND);
+    panelForm.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(PRIMARY_GREEN,2),
             "Supplier Details"));
     
     txtId = new JTextField();
@@ -39,8 +46,7 @@ public class SupplierManagement extends JFrame {
     txtEmail = new JTextField();
     txtAddress = new JTextArea();
     
-    //panelForm.add(new JLabel("Supplier ID:"));
-   // panelForm.add(txtId);
+    
     panelForm.add(new JLabel("Name:"));
     panelForm.add(txtName);
     panelForm.add(new JLabel("Contact Person:"));
@@ -55,18 +61,33 @@ public class SupplierManagement extends JFrame {
  
     add(panelForm, BorderLayout.NORTH);
     
-   // tableModel = new DefaultTableModel(new String[]{"ID","Name","Phone","Email"},0);
     tableModel = new DefaultTableModel(
     new String[]{"Supplier ID","Name","Contact Person","Phone","Email", "Address"}, 0);
-   table = new JTable(tableModel);
-    add(new JScrollPane(table),BorderLayout.CENTER);
+    table = new JTable(tableModel);
+    table.setRowHeight(28);
+    table.setSelectionBackground(LIGHT_GREEN);
+    table.setSelectionForeground(Color.BLACK);
+
+    table.getTableHeader().setBackground(PRIMARY_GREEN);
+    table.getTableHeader().setForeground(Color.WHITE);
+
+    table.getTableHeader().setFont(new Font("Arial",Font.BOLD,13));
+
+    JScrollPane tableScrollPane = new JScrollPane(table);
+    add(tableScrollPane,BorderLayout.CENTER);
     
     JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER,10,10));
-     btnAdd = new JButton("Add");
-     btnUpdate = new JButton("Update");
-     btnDelete = new JButton("Delete");
-     btnClear = new JButton("Clear");
+    panelButtons.setBackground(LIGHT_BACKGROUND);
 
+    btnAdd = new JButton("Add");
+    btnUpdate = new JButton("Update");
+    btnDelete = new JButton("Delete");
+    btnClear = new JButton("Clear");
+
+    styleButton(btnAdd, PRIMARY_GREEN);
+    styleButton(btnUpdate, DARK_GREEN);
+    styleButton(btnDelete, RED);
+    styleButton(btnClear, DARK_GREEN);
     
     panelButtons.add(btnAdd);
     panelButtons.add(btnUpdate);
@@ -78,14 +99,7 @@ public class SupplierManagement extends JFrame {
     btnUpdate.addActionListener(e ->updateSupplier()) ;
     btnDelete.addActionListener(e ->deleteSupplier()) ;
     btnClear.addActionListener(e ->clearForm()) ;
-    
-    /*
-    btnAdd.e -> addSupplier());
-    btnUpdate.e -> updateSupplier());
-    btnDelete.e -> deleteSupplier());
-    btnClear.e -> clearForm());
-    
-    */
+   
     table.addMouseListener(new MouseAdapter(){
         
     @Override
@@ -94,41 +108,39 @@ public class SupplierManagement extends JFrame {
     
       if (selectedrow != -1) {
 
-            txtId.setText(
-                    tableModel.getValueAt(selectedrow, 0).toString()
-            );
+            txtId.setText(tableModel.getValueAt(selectedrow, 0).toString());
 
-            txtName.setText(
-                    tableModel.getValueAt(selectedrow, 1).toString()
-            );
+            txtName.setText(tableModel.getValueAt(selectedrow, 1).toString());
 
-            txtContactPerson.setText(
-                    tableModel.getValueAt(selectedrow, 2).toString()
-            );
+            txtContactPerson.setText(tableModel.getValueAt(selectedrow, 2).toString());
 
-            txtPhone.setText(
-                    tableModel.getValueAt(selectedrow, 3).toString()
-            );
+            txtPhone.setText(tableModel.getValueAt(selectedrow, 3).toString());
 
-            txtEmail.setText(
-                    tableModel.getValueAt(selectedrow, 4).toString()
-            );
+            txtEmail.setText(tableModel.getValueAt(selectedrow, 4).toString());
 
-            txtAddress.setText(
-                    tableModel.getValueAt(selectedrow, 5).toString()
-            );
-/*
-    txtId.setText(tableModel.getValueAt(selectedrow, 0).toString());
-    txtName.setText(tableModel.getValueAt(selectedrow, 1).toString());
-    txtPhone.setText(tableModel.getValueAt(selectedrow, 2).toString());
-    txtEmail.setText(tableModel.getValueAt(selectedrow, 3).toString());
-    */
-txtId.setEnabled(false);
+            txtAddress.setText(tableModel.getValueAt(selectedrow, 5).toString());
+            
+            txtId.setEnabled(false);
     }
     }
     });
     loadSuppliers();
     }
+    private void styleButton(
+        JButton button,Color color) {
+
+    button.setBackground(color);
+    button.setForeground(Color.WHITE);
+
+    button.setFont(new Font("Arial",Font.BOLD,13));
+
+    button.setFocusPainted(false);
+    button.setBorderPainted(false);
+
+    button.setPreferredSize(
+            new Dimension(100, 35)
+    );
+}
     
  private void addSupplier(){
      String name = txtName.getText().trim();
@@ -137,13 +149,13 @@ txtId.setEnabled(false);
     String email = txtEmail.getText().trim();
     String address = txtAddress.getText().trim();
      
- if(name.isEmpty()){
- JOptionPane.showMessageDialog(this, 
+    if(name.isEmpty()){
+    JOptionPane.showMessageDialog(this, 
          "Supplier name cannot be empty!",
          "Error",JOptionPane.ERROR_MESSAGE);
- return;
- }
-  String sql = "INSERT INTO suppliers "
+    return;
+  }
+    String sql = "INSERT INTO suppliers "
             + "(name, contact_person, phone, email, address) "
             + "VALUES (?, ?, ?, ?, ?)";
 
@@ -174,24 +186,23 @@ txtId.setEnabled(false);
                 "Database Error",
                 JOptionPane.ERROR_MESSAGE
         );
- //tableModel.addRow(new Object[]{txtId.getText(),txtName.getText(),txtPhone.getText(),txtEmail.getText()});
- //clearForm();
+ 
  }
  }
  
  private void updateSupplier(){
      int selectedrow  = table.getSelectedRow();
-if(selectedrow ==-1){
+    if(selectedrow ==-1){
     
     
-        JOptionPane.showMessageDialog(
+    JOptionPane.showMessageDialog(
                 this,
                 "Select a supplier to update",
                 "Warning",
                 JOptionPane.WARNING_MESSAGE
         );
 
-        return;
+    return;
     }
 
     int supplierId = Integer.parseInt(
@@ -240,19 +251,11 @@ if(selectedrow ==-1){
                 "Database Error",
                 JOptionPane.ERROR_MESSAGE
         );
- /*   
-tableModel.setValueAt(txtName.getText(),selectedrow,1);
-tableModel.setValueAt(txtPhone.getText(),selectedrow,2);
-tableModel.setValueAt(txtEmail.getText(),selectedrow,3);
-clearForm();
-}else{
-JOptionPane.showMessageDialog(this, "Select a supplier to update","Warning",JOptionPane.WARNING_MESSAGE);
-}
- }*/
+ 
     }}
  private void deleteSupplier(){
-  int selectedrow  = table.getSelectedRow();
-if(selectedrow ==-1){
+int selectedrow  = table.getSelectedRow();
+    if(selectedrow ==-1){
      JOptionPane.showMessageDialog(
                 this,
                 "Select a supplier to delete",
@@ -260,7 +263,7 @@ if(selectedrow ==-1){
                 JOptionPane.WARNING_MESSAGE
         );
 
-        return;
+    return;
     }
 
     int supplierId = Integer.parseInt(
@@ -292,13 +295,7 @@ if(selectedrow ==-1){
                 "Database Error",
                 JOptionPane.ERROR_MESSAGE
         );
-    /*
-tableModel.removeRow(selectedrow);
-clearForm();
- }else{
-JOptionPane.showMessageDialog(this, "Select a supplier to delete","Warning",JOptionPane.WARNING_MESSAGE);
-}*/
- }}
+     }}
  private void loadSuppliers() {
 
     tableModel.setRowCount(0);
