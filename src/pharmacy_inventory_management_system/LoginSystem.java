@@ -17,7 +17,12 @@ private static final Map<String,UserData> userDatabase = new HashMap<>();
      userDatabase.put("James",new UserData("James123".hashCode(),"Cashier"));
 
  }
- */
+ */private final Color PRIMARY_GREEN = new Color(39,174,96);
+private final Color DARK_GREEN = new Color(30,123,73);
+private final Color LIGHT_GREEN = new Color(232,245,233);
+private final Color RED = new Color(192,57,43);
+
+private final Color LIGHT_BACKGROUND = new Color(245,250,247);
  private JTextField txtusername;
  /*
   private JTextField RoleField;
@@ -37,7 +42,7 @@ private static final Map<String,UserData> userDatabase = new HashMap<>();
 
      
      JPanel headerPanel = new JPanel();
-     headerPanel.setBackground(new Color(41,128,185));
+     headerPanel.setBackground(PRIMARY_GREEN);
      
   JLabel titleLabel = new JLabel("HeathFirst Login");
   titleLabel.setFont(new Font("Arial",Font.BOLD,22));
