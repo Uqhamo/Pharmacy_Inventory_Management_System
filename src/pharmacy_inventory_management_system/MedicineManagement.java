@@ -20,6 +20,11 @@ public class MedicineManagement extends JFrame{
     private JTable table;
     private DefaultTableModel tableModel;
     private Connection conn;
+    private final Color PRIMARY_GREEN = new Color(39,174,96);
+    private final Color DARK_GREEN = new Color(30,123,73);
+    private final Color LIGHT_GREEN = new Color(232,245,233);
+    private final Color RED = new Color(192,57,43);
+    private final Color LIGHT_BACKGROUND = new Color(245,250,247);
     
     public MedicineManagement(){
     setTitle("HealthFirst Medicine Management System");
@@ -27,12 +32,15 @@ public class MedicineManagement extends JFrame{
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setLocationRelativeTo(null);
     setLayout(new BorderLayout(10,10));
-    
+    getContentPane().setBackground(LIGHT_BACKGROUND);
+
     connectDatabase();
     
-    JPanel panelForm = new JPanel(new GridLayout(5,4,5,5));
-    panelForm.setBorder(BorderFactory.createTitledBorder("Medicine Details"));
-    
+    JPanel panelForm = new JPanel(new GridLayout(5,4,10,10));
+    panelForm.setBackground(LIGHT_BACKGROUND);
+ 
+    panelForm.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(PRIMARY_GREEN,2),"Medicine Details"));
     panelForm.add(new JLabel("Medicine ID:"));
     txtMedicineId = new JTextField();
     panelForm.add(txtMedicineId);
@@ -41,14 +49,14 @@ public class MedicineManagement extends JFrame{
     txtName = new JTextField();
     panelForm.add(txtName);
     
-     panelForm.add(new JLabel("Company:"));
-        txtCompany = new JTextField();
-        panelForm.add(txtCompany);
+    panelForm.add(new JLabel("Company:"));
+    txtCompany = new JTextField();
+    panelForm.add(txtCompany);
 
         
-        panelForm.add(new JLabel("Medicine Type:"));
-        txtMedicineType = new JTextField();
-        panelForm.add(txtMedicineType);
+    panelForm.add(new JLabel("Medicine Type:"));
+    txtMedicineType = new JTextField();
+    panelForm.add(txtMedicineType);
         
     panelForm.add(new JLabel("Price (R):"));
     txtPrice = new JTextField();
@@ -58,73 +66,66 @@ public class MedicineManagement extends JFrame{
     txtQuantity = new JTextField();
     panelForm.add(txtQuantity);
     
-     panelForm.add(new JLabel("Reorder Level:"));
-        txtReorderLevel = new JTextField();
-        panelForm.add(txtReorderLevel);
+    panelForm.add(new JLabel("Reorder Level:"));
+    txtReorderLevel = new JTextField();
+    panelForm.add(txtReorderLevel);
 
         
-        panelForm.add(new JLabel("Expiry Date (YYYY-MM-DD):"));
-        txtExpiryDate = new JTextField();
-        panelForm.add(txtExpiryDate);
+    panelForm.add(new JLabel("Expiry Date (YYYY-MM-DD):"));
+    txtExpiryDate = new JTextField();
+    panelForm.add(txtExpiryDate);
 
         
-        panelForm.add(new JLabel("Supplier:"));
-        cmbSupplier = new JComboBox<>();
-        panelForm.add(cmbSupplier);
+    panelForm.add(new JLabel("Supplier:"));
+    cmbSupplier = new JComboBox<>();
+    panelForm.add(cmbSupplier);
     
     add(panelForm, BorderLayout.NORTH);
     
-    //tableModel = new DefaultTableModel(new String[]{"ID","Name","Price","Quantity"},0);
-      tableModel = new DefaultTableModel(new String[]{
+  
+    tableModel = new DefaultTableModel(new String[]{
                     "ID","Name","Company","Type","Price","Quantity","Reorder Level","Expiry Date","Supplier ID"},0);
     table = new JTable(tableModel);
+    table.setFont(
+        new Font("Arial", Font.PLAIN, 13)
+);
+
+    table.setRowHeight(28);
+
+    table.setSelectionBackground(LIGHT_GREEN);
+    table.setSelectionForeground(Color.BLACK);
+
+
+    table.getTableHeader().setBackground(PRIMARY_GREEN);
+    table.getTableHeader().setForeground(Color.WHITE);
+
+    table.getTableHeader().setFont(
+        new Font("Arial", Font.BOLD, 13)
+);
     table.addMouseListener(new MouseAdapter(){
     public void mouseClicked(MouseEvent e){
     int row  = table.getSelectedRow();
-     if (row != -1) {
+    if (row != -1) {
 
-                    txtMedicineId.setText(
-                            tableModel.getValueAt(row, 0).toString()
-                    );
-
-                    txtName.setText(
-                            tableModel.getValueAt(row, 1).toString()
-                    );
-
-                    txtCompany.setText(
-                            tableModel.getValueAt(row, 2).toString()
-                    );
-
-                    txtMedicineType.setText(
-                            tableModel.getValueAt(row, 3).toString()
-                    );
-
-                    txtPrice.setText(
-                            tableModel.getValueAt(row, 4).toString()
-                    );
-
-                    txtQuantity.setText(
-                            tableModel.getValueAt(row, 5).toString()
-                    );
-
-                    txtReorderLevel.setText(
-                            tableModel.getValueAt(row, 6).toString()
-                    );
-
-                    txtExpiryDate.setText(
-                            tableModel.getValueAt(row, 7).toString()
-                    );
-
-                    if (tableModel.getValueAt(row, 8) != null) {
-                        cmbSupplier.setSelectedItem(
-                                tableModel.getValueAt(row, 8).toString()
-                        );
-    /*
     txtMedicineId.setText(tableModel.getValueAt(row, 0).toString());
+
     txtName.setText(tableModel.getValueAt(row, 1).toString());
-    txtPrice.setText(tableModel.getValueAt(row, 2).toString());
-    txtQuantity.setText(tableModel.getValueAt(row, 3).toString());
-*/
+
+    txtCompany.setText(tableModel.getValueAt(row, 2).toString());
+
+    txtMedicineType.setText(tableModel.getValueAt(row, 3).toString());
+
+    txtPrice.setText(tableModel.getValueAt(row, 4).toString());
+
+    txtQuantity.setText(tableModel.getValueAt(row, 5).toString());
+
+    txtReorderLevel.setText(tableModel.getValueAt(row, 6).toString());
+
+    txtExpiryDate.setText(tableModel.getValueAt(row, 7).toString());
+
+    if (tableModel.getValueAt(row, 8) != null) {cmbSupplier.setSelectedItem(
+            tableModel.getValueAt(row, 8).toString());
+    
     }
     }}});
     add(new JScrollPane(table),BorderLayout.CENTER);
@@ -135,7 +136,13 @@ public class MedicineManagement extends JFrame{
     JButton btnUpdate = new JButton("Update");
     JButton btnDelete = new JButton("Delete");
     JButton btnClear = new JButton("Clear");
+    panelButtons.setBackground(LIGHT_BACKGROUND);
 
+    styleButton(btnCreate, PRIMARY_GREEN);
+    styleButton(btnRead, DARK_GREEN);
+    styleButton(btnUpdate, PRIMARY_GREEN);
+    styleButton(btnDelete, RED);
+    styleButton(btnClear, DARK_GREEN);
     
     panelButtons.add(btnCreate);
     panelButtons.add(btnRead);
@@ -154,20 +161,25 @@ public class MedicineManagement extends JFrame{
     loadSuppliers();
 
     }
-    private void connectDatabase(){
-    /*
-        try{
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/healthfirstdb,root,Mekana@12345");
-            Statement stmt = conn.createStatement();
-            stmt.execute("CREATE TABLE IF NOT EXISTS medicines("+ "id INTEGER PRIMARY KEY AUTOINCREMENT,"+ "name TEXT, price REAL, quantity INTEGER)");
-        
-        }catch(Exception ex){
-        JOptionPane.showMessageDialog(this, "Database Error:"+ ex.getMessage());
-        }*/
+    private void styleButton(
+        JButton button,
+        Color color) {
+
+    button.setBackground(color);
+    button.setForeground(Color.WHITE);
+
+    button.setFont(new Font("Arial",Font.BOLD,13));
+
+    button.setFocusPainted(false);
+    button.setBorderPainted(false);
+
+    button.setPreferredSize( new Dimension(100, 35));
+}
+    
+private void connectDatabase(){
     
     try {
-
-            conn = DriverManager.getConnection(
+        conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/healthfirstdb",
                     "root",
                     "Mekana@12345"
@@ -183,21 +195,21 @@ public class MedicineManagement extends JFrame{
             );
         }
     }
-     private void loadSuppliers() {
+private void loadSuppliers() {
 
-        cmbSupplier.removeAllItems();
+    cmbSupplier.removeAllItems();
 
-        String sql = "SELECT supplier_id FROM suppliers ORDER BY supplier_id";
+    String sql = "SELECT supplier_id FROM suppliers ORDER BY supplier_id";
 
-        try (
+    try (
                 PreparedStatement pst = conn.prepareStatement(sql);
                 ResultSet rs = pst.executeQuery()
         ) {
 
-            while (rs.next()) {
+        while (rs.next()) {
 
                 cmbSupplier.addItem(
-                        String.valueOf(rs.getInt("supplier_id"))
+                String.valueOf(rs.getInt("supplier_id"))
                 );
             }
 
@@ -211,25 +223,9 @@ public class MedicineManagement extends JFrame{
             );
         }
     }
-    private void loadTableData(){
+private void loadTableData(){
     tableModel.setRowCount(0);
-    /*
-    try{
-         Statement stmt = conn.createStatement();
-         ResultSet rs = stmt.executeQuery("SELECT * FROM medicines");
-         while(rs.next()){
-         tableModel.addRow(new Object[]{
-             rs.getInt("id"),
-             rs.getString("name"),
-             rs.getDouble("price"),
-             rs.getInt("quantity")
-             
-         
-         });
-         }
-    }catch(SQLException ex ){
-    ex.printStackTrace();
-    }*/
+    
      String sql = "SELECT medicine_id, name, company, medicine_type, "
                 + "price, quantity_in_stock, reorder_level, expiry_date, supplier_id "
                 + "FROM medicines";
@@ -265,24 +261,9 @@ public class MedicineManagement extends JFrame{
         }
     }
     
-    private void createMedicine(){
-        /*
-     try{
-         String sql = "INSERT INTO medicines(name,price,quantity) VALUES(?,?,?)";
-         PreparedStatement pst = conn.prepareStatement(sql);
-         pst.setString(1, txtName.getText());
-         pst.setDouble(2, Double.parseDouble(txtPrice.getText()));
-         pst.setInt(3, Integer.parseInt(txtQuantity.getText()));
-         pst.executeUpdate();
-         loadTableData();
-         clearFields();
-         JOptionPane.showMessageDialog(this, "Medicine Added Successfully");
-     
-     }catch(Exception ex){
-       JOptionPane.showMessageDialog(this, "Error:Check your input values");
-
-     }*/
-           String name = txtName.getText().trim();
+private void createMedicine(){
+      
+        String name = txtName.getText().trim();
         String company = txtCompany.getText().trim();
         String medicineType = txtMedicineType.getText().trim();
         String priceText = txtPrice.getText().trim();
@@ -344,7 +325,7 @@ public class MedicineManagement extends JFrame{
             loadTableData();
             clearFields();
 
-        } catch (NumberFormatException ex) {
+        }catch(NumberFormatException ex) {
 
             JOptionPane.showMessageDialog(
                     this,
@@ -373,25 +354,6 @@ public class MedicineManagement extends JFrame{
         }
     }
     private void updateMedicine(){
-        /*
-    try{
-         String sql = "UPDATE medicines SET name=? , price=?,quantity=? WHERE id=?";
-         PreparedStatement pst = conn.prepareStatement(sql);
-         pst.setString(1, txtName.getText());
-         pst.setDouble(2, Double.parseDouble(txtPrice.getText()));
-         pst.setInt(3, Integer.parseInt(txtQuantity.getText()));
-         pst.setInt(4, Integer.parseInt(txtId.getText()));
-
-         pst.executeUpdate();
-         loadTableData();
-         clearFields();
-         JOptionPane.showMessageDialog(this, "Medicine Updated Successfully");
-     
-     }catch(Exception ex){
-       JOptionPane.showMessageDialog(this, "Error:Select a row or enter valid ID");
-       
-
-     }*/
         
             if (txtMedicineId.getText().isEmpty()) {
 
@@ -407,25 +369,15 @@ public class MedicineManagement extends JFrame{
 
         try {
 
-            int medicineId = Integer.parseInt(
-                    txtMedicineId.getText()
-            );
+            int medicineId = Integer.parseInt(txtMedicineId.getText());
 
-            double price = Double.parseDouble(
-                    txtPrice.getText()
-            );
+            double price = Double.parseDouble(txtPrice.getText());
 
-            int quantity = Integer.parseInt(
-                    txtQuantity.getText()
-            );
+            int quantity = Integer.parseInt( txtQuantity.getText());
 
-            int reorderLevel = Integer.parseInt(
-                    txtReorderLevel.getText()
-            );
+            int reorderLevel = Integer.parseInt(txtReorderLevel.getText());
 
-            int supplierId = Integer.parseInt(
-                    cmbSupplier.getSelectedItem().toString()
-            );
+            int supplierId = Integer.parseInt(cmbSupplier.getSelectedItem().toString());
 
             String sql = "UPDATE medicines SET "
                     + "name=?, "
@@ -492,24 +444,8 @@ public class MedicineManagement extends JFrame{
         }
     }
     
-    private void deleteMedicine(){
-        /*
-        try{
-         String sql = "DELETE FROM medicines WHERE id=?";
-         PreparedStatement pst = conn.prepareStatement(sql);
+private void deleteMedicine(){
         
-         pst.setInt(1, Integer.parseInt(txtId.getText()));
-
-         pst.executeUpdate();
-         loadTableData();
-         clearFields();
-         JOptionPane.showMessageDialog(this, "Medicine Deleted Successfully");
-     
-     }catch(Exception ex){
-       JOptionPane.showMessageDialog(this, "Error:Select or enter enter valid ID to delete");
-       
-
-     }*/
         if (txtMedicineId.getText().isEmpty()) {
 
             JOptionPane.showMessageDialog(
@@ -524,12 +460,9 @@ public class MedicineManagement extends JFrame{
 
         try {
 
-            int medicineId = Integer.parseInt(
-                    txtMedicineId.getText()
-            );
+            int medicineId = Integer.parseInt(txtMedicineId.getText());
 
-            String sql =
-                    "DELETE FROM medicines WHERE medicine_id=?";
+            String sql ="DELETE FROM medicines WHERE medicine_id=?";
 
             PreparedStatement pst = conn.prepareStatement(sql);
 
@@ -537,10 +470,7 @@ public class MedicineManagement extends JFrame{
 
             pst.executeUpdate();
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Medicine Deleted Successfully"
-            );
+            JOptionPane.showMessageDialog(this,"Medicine Deleted Successfully");
 
             loadTableData();
             clearFields();
@@ -556,14 +486,9 @@ public class MedicineManagement extends JFrame{
         }
     }
     
-    private void clearFields(){
-        /*
-    txtId.setText("");
-    txtName.setText("");
-    txtPrice.setText("");
-    txtQuantity.setText("");
-    */
-          txtMedicineId.setText("");
+private void clearFields(){
+        
+        txtMedicineId.setText("");
         txtName.setText("");
         txtCompany.setText("");
         txtMedicineType.setText("");
