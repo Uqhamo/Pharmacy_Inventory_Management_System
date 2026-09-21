@@ -118,7 +118,7 @@ public class StockCheck extends JFrame{
             }
         });
 
-        
+        connectDatabase();
         loadStock();
     }
       private void connectDatabase() {
