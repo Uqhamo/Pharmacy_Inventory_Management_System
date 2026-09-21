@@ -39,19 +39,22 @@ private static final Map<String,UserData> userDatabase = new HashMap<>();
      JPanel headerPanel = new JPanel();
      headerPanel.setBackground(new Color(41,128,185));
      
-    JLabel titleLabel = new JLabel("HeathFirst Login");
+  JLabel titleLabel = new JLabel("HeathFirst Login");
   titleLabel.setFont(new Font("Arial",Font.BOLD,22));
   
   titleLabel.setForeground(Color.WHITE);
+  headerPanel.add(titleLabel);
   add(headerPanel, BorderLayout.NORTH);
-    JPanel formPanel = new JPanel(new GridLayout(2,2,10,15));
-    formPanel.setBorder(BorderFactory.createEmptyBorder(50,50,50,50));
+  JPanel formPanel = new JPanel(new GridLayout(2,2,
+          10,15));
+  formPanel.setBorder(BorderFactory.createEmptyBorder(50,50,50,50));
     
     
   formPanel.add(new JLabel("Username:"));
-        txtusername = new JTextField();
-formPanel.add(txtusername);
-  formPanel.add( new JLabel("Password:"));
+  txtusername = new JTextField();
+  formPanel.add(txtusername);
+  
+  formPanel.add(new JLabel("Password:"));
     
     //txtusername = new JTextField();
     txtpassword = new JPasswordField();
@@ -74,7 +77,7 @@ formPanel.add(txtusername);
    btnLogin.addActionListener(e-> 
            login());
  
-
+/*
     setLayout(new GridLayout(3,2,10,10));
     
     //add(lblUsername);
@@ -84,7 +87,7 @@ formPanel.add(txtusername);
     
     add(new JLabel());
     add(btnLogin);
-  
+  */
     //setLayout(new BorderLayout(10,10));
      
      /*
@@ -150,20 +153,22 @@ formPanel.add(txtusername);
  
  private void login(){
  String username = txtusername.getText().trim();
- String password = new String(txtpassword.getPassword());
+ String password = new String(
+         txtpassword.getPassword());
  
  if(username.isEmpty() || password.isEmpty()){
- JOptionPane.showMessageDialog(this, "Please enter username and password");
+ JOptionPane.showMessageDialog(this, 
+         "Please enter username and password");
  return;
  }
- String sql ="SELECT user_id, "
-         + "username,password, "
-         + "role, full_name" + 
-         "FROM users "
-         + "WHERE username = ? AND password = ?";
+ String sql = "SELECT user_id, username, password, role, full_name "
+            + "FROM users "
+            + "WHERE username = ? AND password = ?";
  
- try(Connection conn = DBConnection.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(sql)){
+ try(Connection conn = 
+         DBConnection.getConnection();
+         PreparedStatement stmt = 
+                 conn.prepareStatement(sql)){
      
      stmt.setString(1, username);
      stmt.setString(2, password);
@@ -174,22 +179,23 @@ formPanel.add(txtusername);
      
          int userId = rs.getInt("user_id");
          String role = rs.getString("role");
+         String fullName = rs.getString("full_name");
          
-         JOptionPane.showMessageDialog(this, "Welcome" +rs.getString("full_name"));
+         JOptionPane.showMessageDialog(this, "Welcome " +  fullName);
          
-         if(role.equals("Admin")){
+         if(role.equalsIgnoreCase("Admin")){
          new AdminDashboard().setVisible(true);
-         }else if(role.equals("Cashier")){
+         }else if(role.equalsIgnoreCase("Cashier")){
          new CashierDashboard(userId).setVisible(true);
          }
          dispose();
      }else{
-         JOptionPane.showMessageDialog(this, "Invalid username or password");
+         JOptionPane.showMessageDialog(this, "Invalid username or password","Login Failed",JOptionPane.ERROR_MESSAGE);
      
      }
 
  }catch(SQLException ex){
- JOptionPane.showMessageDialog(this, "Database error:"+ex.getMessage());
+ JOptionPane.showMessageDialog(this, "Database error:"+ex.getMessage(),"Database Error",JOptionPane.ERROR_MESSAGE);
  }
  }     
  }
