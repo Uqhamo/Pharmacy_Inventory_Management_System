@@ -10,102 +10,183 @@ import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import javax.swing.border.EmptyBorder;
 /**
  *
  * @author uqham
  */
 public class BillingSystem extends JFrame{
     
-  private JTextField txtCustomerName, txtItemName,txtQuantity, txtPrice;
-  private JTextArea txtReceipt;
+private JTextField txtCustomerName, txtItemName,txtQuantity, txtPrice;
+private JTextArea txtReceipt;
 private JButton btnGenerate, btnSave, btnPrint, btnClear;
 
 private double totalAmount =0.0;
 
+private final Color PRIMARY_GREEN = new Color(39,174,96);
+private final Color DARK_GREEN = new Color(30,123,73);
+private final Color LIGHT_GREEN = new Color(232,245,233);
+private final Color RED = new Color(192,57,43);
+
+private final Color LIGHT_BACKGROUND = new Color(245,250,247);
+
+
+
 public BillingSystem(){
-setTitle("Customer Billing System");
-setSize(700,500);
-setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-setLocationRelativeTo(null);
-setLayout(new BorderLayout(10,10));
+    setTitle(" HealthFirst Customer Billing System");
+    setSize(950,600);
+    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    setLocationRelativeTo(null);
+    getContentPane().setBackground(LIGHT_BACKGROUND);
+    setLayout(new BorderLayout());
 
-JLabel lblTitle = new JLabel("HealthFirst Billing System",JLabel.CENTER);
-lblTitle.setFont(new Font("Arial",Font.BOLD,22));
-lblTitle.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-add( lblTitle, BorderLayout.NORTH);
+    JPanel headerPanel = new JPanel(new BorderLayout());
+
+    headerPanel.setBackground(PRIMARY_GREEN);
+    headerPanel.setBorder(new EmptyBorder(20,25,20,25));
+
+    JLabel lblTitle = new JLabel("HealthFirst Pharmacy");
+    lblTitle.setFont(new Font("Arial",Font.BOLD,24));
+    lblTitle.setForeground(Color.WHITE);
+
+    JLabel lblSystem = new JLabel("HealthFirst Billing System",JLabel.CENTER);
+    lblSystem.setFont(new Font("Arial",Font.BOLD,24));
+    lblSystem.setForeground(Color.WHITE);
+
+    headerPanel.add(lblSystem,BorderLayout.EAST);
+
+    add( headerPanel, BorderLayout.NORTH);
+    JPanel mainPanel =new JPanel(new GridLayout(1, 2, 20, 0));
+
+    mainPanel.setBackground(LIGHT_BACKGROUND);
+    mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20) );
+
+    JPanel leftPanel = new JPanel(new BorderLayout (10,10));
+    leftPanel.setBackground(Color.WHITE);
+
+    leftPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 220)),
+        new EmptyBorder(20, 20, 20, 20))
+);
+    JLabel lblDetails =new JLabel("Customer & Item Details");
+    lblDetails.setFont(new Font( "Arial", Font.BOLD, 20));
+    lblDetails.setForeground(DARK_GREEN);
+    leftPanel.add(lblDetails,BorderLayout.NORTH);
 
 
-JPanel panelInput = new JPanel(new GridLayout(5,2,10,15));
-panelInput.setBorder(BorderFactory.createTitledBorder("Customer & Item Details"));
+    JPanel panelInput = new JPanel(new GridLayout(8,1,5,8));
+    panelInput.setBackground(Color.WHITE);
 
-panelInput.add(new JLabel("Customer Name:"));
-txtCustomerName = new JTextField();
-panelInput.add(txtCustomerName);
+    panelInput.setBorder(BorderFactory.createTitledBorder("Customer & Item Details"));
 
-panelInput.add(new JLabel("Item Name:"));
-txtItemName = new JTextField();
-panelInput.add(txtItemName);
+    panelInput.add(new JLabel("Customer Name:"));
+    txtCustomerName = new JTextField();
+    panelInput.add(txtCustomerName);
 
-panelInput.add(new JLabel("Quantity:"));
-txtQuantity = new JTextField();
-panelInput.add(txtQuantity);
+    panelInput.add(new JLabel("Item Name:"));
+    txtItemName = new JTextField();
+    panelInput.add(txtItemName);
 
-panelInput.add(new JLabel("Price Per Unit:"));
-txtPrice = new JTextField();
-panelInput.add(txtPrice);
+    panelInput.add(new JLabel("Quantity:"));
+    txtQuantity = new JTextField();
+    panelInput.add(txtQuantity);
 
-btnGenerate = new JButton("Generate Bill");
-btnClear = new JButton("Clear");
-panelInput.add(btnGenerate);
-panelInput.add(btnClear);
+    panelInput.add(new JLabel("Price Per Unit:"));
+    txtPrice = new JTextField();
+    panelInput.add(txtPrice);
+    leftPanel.add(panelInput,BorderLayout.CENTER);
 
-add(panelInput, BorderLayout.WEST);
+    JPanel inputButtons = new JPanel(new GridLayout(1, 2, 10, 0));
 
-JPanel panelReceipt = new JPanel(new BorderLayout());
-panelReceipt.setBorder(BorderFactory.createTitledBorder("Invoice Receipt"));
+    inputButtons.setBackground(Color.WHITE);
 
-txtReceipt = new JTextArea();
-txtReceipt.setEditable(false);
-txtReceipt.setFont(new Font("Monospaced",Font.PLAIN,12));
-JScrollPane scrollPane = new JScrollPane(txtReceipt);
-panelReceipt.add(scrollPane, BorderLayout.CENTER);
+    btnGenerate = new JButton("Generate Bill");
 
-JPanel panelReceiptActions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-btnSave = new JButton("Save to File");
-btnPrint = new JButton("Print Bill");
-panelReceiptActions.add(btnSave);
-panelReceiptActions.add(btnPrint);
-panelReceipt.add(panelReceiptActions, BorderLayout.SOUTH);
+    styleButton(btnGenerate,DARK_GREEN);
 
-add(panelReceipt, BorderLayout.CENTER);
+    btnClear = new JButton("Clear");
 
-btnGenerate.addActionListener(new ActionListener(){
-@Override
-public void actionPerformed(ActionEvent e){
-generateBillLogic();
-}
+    styleButton(btnClear,RED);
+
+    inputButtons.add(btnGenerate);
+    inputButtons.add(btnClear);
+
+    leftPanel.add(inputButtons,BorderLayout.SOUTH);
+
+    JPanel panelReceipt = new JPanel(new BorderLayout(10,10));
+ 
+    panelReceipt.setBackground(Color.WHITE);
+
+    panelReceipt.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(220, 220, 22)),
+            new EmptyBorder(20, 20, 20, 20)));
+
+        JLabel lblReceipt = new JLabel("Invoice Receipt");
+
+        lblReceipt.setFont(new Font("Arial",Font.BOLD,20));
+
+        lblReceipt.setForeground(DARK_GREEN);
+
+        panelReceipt.add(lblReceipt,BorderLayout.NORTH);
+
+
+    txtReceipt = new JTextArea();
+    txtReceipt.setEditable(false);
+    txtReceipt.setFont(new Font("Monospaced",Font.PLAIN,12));
+
+    txtReceipt.setBackground(new Color(250, 250, 250));
+
+    txtReceipt.setBorder(new EmptyBorder(15, 15, 15, 15));
+    JScrollPane scrollPane = new JScrollPane(txtReceipt);
+    scrollPane.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220)));
+
+    panelReceipt.add(scrollPane,BorderLayout.CENTER);
+
+
+    JPanel panelReceiptActions = new JPanel(new GridLayout(1,2,10,0));
+    panelReceiptActions.setBackground(Color.WHITE);
+    btnSave = new JButton("Save to File");
+    styleButton(btnSave,PRIMARY_GREEN);
+    
+    btnPrint = new JButton("Print Bill");
+ 
+    styleButton(btnPrint,DARK_GREEN );
+    panelReceiptActions.add(btnSave);
+    panelReceiptActions.add(btnPrint);
+    panelReceipt.add(panelReceiptActions, BorderLayout.SOUTH);
+
+
+    mainPanel.add(leftPanel);
+    mainPanel.add(panelReceipt);
+
+    add(mainPanel,BorderLayout.CENTER);
+        
+    btnGenerate.addActionListener(new ActionListener(){
+    @Override
+    public void actionPerformed(ActionEvent e){
+    generateBillLogic();
+    }
+    });
+
+    btnSave.addActionListener(new ActionListener(){
+    @Override
+    public void actionPerformed(ActionEvent e){
+    saveBillToFile();
+    }
+    });
+
+    btnPrint.addActionListener(new ActionListener(){
+    @Override
+    public void actionPerformed(ActionEvent e){
+    printBillReceipt();
+    }
+    });
+    
+    btnClear.addActionListener(new ActionListener(){
+    @Override
+    public void actionPerformed(ActionEvent e){
+    clearFields();
+   }
 });
 
-btnSave.addActionListener(new ActionListener(){
-@Override
-public void actionPerformed(ActionEvent e){
-saveBillToFile();
-}
-});
-
-btnPrint.addActionListener(new ActionListener(){
-@Override
-public void actionPerformed(ActionEvent e){
-printBillReceipt();
-}
-});
-btnClear.addActionListener(new ActionListener(){
-@Override
-public void actionPerformed(ActionEvent e){
-clearFields();
-}
-});
-
 
 
 
@@ -114,6 +195,34 @@ clearFields();
 
 
 }
+private void styleButton(
+            JButton button,
+            Color backgroundColor) {
+
+        button.setBackground(
+                backgroundColor
+        );
+
+        button.setForeground(
+                Color.WHITE
+        );
+
+        button.setFont(
+                new Font(
+                        "Arial",
+                        Font.BOLD,
+                        14
+                )
+        );
+
+        button.setFocusPainted(false);
+
+        button.setPreferredSize(
+                new Dimension(
+                        150, 42
+                )
+        );
+    }
 private void generateBillLogic(){
 try{
     String customerName = txtCustomerName.getText().trim();
@@ -130,17 +239,17 @@ try{
     totalAmount = qty*price;
      StringBuilder receipt = new StringBuilder();
      
-     receipt.append("---------------------\n");
+     receipt.append("==============================\n");
      receipt.append(" HealthFirst INVOICE\n");
-     receipt.append("----------------------\n");
+     receipt.append("===============================\n");
      receipt.append(String.format("Customer Name: %s\n", customerName));
-     receipt.append("----------------------\n");
+     receipt.append("==================================\n");
      receipt.append(String.format("%-20s %-10s %-10s\n","Item Name", "QTY","Price"));
-     receipt.append("----------------------\n");
+     receipt.append("====================================\n");
      receipt.append(String.format("%-20s %10d R%-9.2f\n",itemName,qty,price));
-     receipt.append("----------------------\n");
+     receipt.append("=====================================\n");
      receipt.append(String.format("Total Amount Due: R%-9.2f\n", totalAmount));
-     receipt.append("----------------------\n");
+     receipt.append("=======================================\n");
      receipt.append(" Thank You For Your Business!\n");
      
      txtReceipt.setText(receipt.toString());
@@ -207,6 +316,7 @@ JOptionPane.showMessageDialog(this, "Quantity must be an Interger and Price must
  txtPrice.setText("");
  txtReceipt.setText("");
  totalAmount =0.0;
+   txtCustomerName.requestFocus();
  }
 }
  
