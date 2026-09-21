@@ -33,10 +33,10 @@ public class AdminDashboard extends JFrame {
  btnSupplier.addActionListener(e-> new SupplierManagement().setVisible(true));
  
  JButton btnUsers = new JButton("User Management");
- btnUsers.addActionListener(e-> new MedicineManagement().setVisible(true));
+ btnUsers.addActionListener(e-> new UserManagement().setVisible(true));
  
  JButton btnReports = new JButton("Reports");
- btnReports.addActionListener(e-> JOptionPane.showMessageDialog(this,"Report Generation" ));
+ btnReports.addActionListener(e-> new Report().setVisible(true));
    
  panelButtons.add(btnMedicine);
   panelButtons.add(btnSupplier);
