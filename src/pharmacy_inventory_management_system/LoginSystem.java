@@ -6,34 +6,88 @@ package pharmacy_inventory_management_system;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.*;
+
 
 public class LoginSystem extends JFrame{
+    /*
 private static final Map<String,UserData> userDatabase = new HashMap<>();
  static{
-     userDatabase.put("admin1",new UserData("admin123".hashCode(),"Admin"));
-     userDatabase.put("cashier1",new UserData("cashier123".hashCode(),"Cashier"));
+     userDatabase.put("Uqhamo",new UserData("U123".hashCode(),"Admin"));
+     userDatabase.put("James",new UserData("James123".hashCode(),"Cashier"));
 
  }
- private JTextField usernameField;
+ */
+ private JTextField txtusername;
+ /*
   private JTextField RoleField;
     private JTextField FullNameField;
 
-
- private JPasswordField passwordField;
- private JLabel messageLabel;
+*/
+ private JPasswordField txtpassword;
+ //private JLabel messageLabel;
  
  public LoginSystem(){
  
-     setTitle("HealthFirst");
-     setSize(400, 250);
+     setTitle("HealthFirst Pharmacy - Login");
+     setSize(600, 450);
      setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
      setLocationRelativeTo(null);
      setLayout(new BorderLayout(10,10));
+
      
+     JPanel headerPanel = new JPanel();
+     headerPanel.setBackground(new Color(41,128,185));
+     
+    JLabel titleLabel = new JLabel("HeathFirst Login");
+  titleLabel.setFont(new Font("Arial",Font.BOLD,22));
+  
+  titleLabel.setForeground(Color.WHITE);
+  add(headerPanel, BorderLayout.NORTH);
+    JPanel formPanel = new JPanel(new GridLayout(2,2,10,15));
+    formPanel.setBorder(BorderFactory.createEmptyBorder(50,50,50,50));
+    
+    
+  formPanel.add(new JLabel("Username:"));
+        txtusername = new JTextField();
+formPanel.add(txtusername);
+  formPanel.add( new JLabel("Password:"));
+    
+    //txtusername = new JTextField();
+    txtpassword = new JPasswordField();
+    formPanel.add(txtpassword);
+    
+    add(formPanel, BorderLayout.CENTER);
+    
+    JPanel buttonPanel = new JPanel();
+    JButton btnLogin = new JButton(""
+            + "Login");
+    btnLogin.setPreferredSize(
+                new Dimension(150, 40)
+        );
+
+    //btnLogin.addActionListener(e-> 
+      //      login());
+      
+      buttonPanel.add(btnLogin);
+      add(buttonPanel, BorderLayout.SOUTH);
+   btnLogin.addActionListener(e-> 
+           login());
+ 
+
+    setLayout(new GridLayout(3,2,10,10));
+    
+    //add(lblUsername);
+    add(txtusername);
+    //add(lblPassword);
+    add(txtpassword);
+    
+    add(new JLabel());
+    add(btnLogin);
+  
+    //setLayout(new BorderLayout(10,10));
+     
+     /*
      JPanel headerPanel = new JPanel();
      headerPanel.setBackground(new Color(41, 128, 185));
      JLabel headerLabel = new JLabel("User Authentication");
@@ -59,7 +113,7 @@ private static final Map<String,UserData> userDatabase = new HashMap<>();
      passwordField =new JPasswordField(15);
      formPanel.add(passwordField,gbc);
      add(formPanel, BorderLayout.CENTER);
-     
+     /*
      gbc.gridx = 0; gbc.gridy=2;
      formPanel.add(new JLabel("Role:"),gbc);
      gbc.gridx = 1;
@@ -71,8 +125,8 @@ private static final Map<String,UserData> userDatabase = new HashMap<>();
      gbc.gridx = 1;
      FullNameField = new JTextField(15);
      formPanel.add(FullNameField, gbc);
-     
-     
+     */
+     /*
      
      JPanel bottomPanel = new JPanel(new GridLayout(2,1,5,5));
      
@@ -91,8 +145,55 @@ private static final Map<String,UserData> userDatabase = new HashMap<>();
      public void actionPerformed(ActionEvent e){
      handleLogin();
      }
-     });
+     });*/
  }
+ 
+ private void login(){
+ String username = txtusername.getText().trim();
+ String password = new String(txtpassword.getPassword());
+ 
+ if(username.isEmpty() || password.isEmpty()){
+ JOptionPane.showMessageDialog(this, "Please enter username and password");
+ return;
+ }
+ String sql ="SELECT user_id, "
+         + "username,password, "
+         + "role, full_name" + 
+         "FROM users "
+         + "WHERE username = ? AND password = ?";
+ 
+ try(Connection conn = DBConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)){
+     
+     stmt.setString(1, username);
+     stmt.setString(2, password);
+     
+     ResultSet rs = stmt.executeQuery();
+     
+     if(rs.next()){
+     
+         int userId = rs.getInt("user_id");
+         String role = rs.getString("role");
+         
+         JOptionPane.showMessageDialog(this, "Welcome" +rs.getString("full_name"));
+         
+         if(role.equals("Admin")){
+         new AdminDashboard().setVisible(true);
+         }else if(role.equals("Cashier")){
+         new CashierDashboard(userId).setVisible(true);
+         }
+         dispose();
+     }else{
+         JOptionPane.showMessageDialog(this, "Invalid username or password");
+     
+     }
+
+ }catch(SQLException ex){
+ JOptionPane.showMessageDialog(this, "Database error:"+ex.getMessage());
+ }
+ }     
+ }
+ /*
  private void handleLogin(){
      String username = usernameField.getText().trim();
      char [] passwordChars = passwordField.getPassword();
@@ -112,18 +213,18 @@ private static final Map<String,UserData> userDatabase = new HashMap<>();
       this.dispose();
       
       if(user.role.equals("Admin")){
-      openAdminMenu();
+      new AdminDashboard().setVisible(true);
       }else if(user.role.equals("Cashier")){
-      openCashierMenu();
+      new CashierDashboard().setVisible(true);
       }
       }else{
           messageLabel.setText("Invaild username or password");
       }
-      }else{
-          messageLabel.setText("Invalid username or password");
-      }
+      
      
- }
+ }}
+ */
+ /*
  private void openAdminMenu(){
  JFrame adminFrame = new JFrame("Admin Dashboard");
  adminFrame.setSize(500, 400);
@@ -147,7 +248,8 @@ private static final Map<String,UserData> userDatabase = new HashMap<>();
  cashierFrame.add(label);
  
  cashierFrame.setVisible(true);
- }
+ }*/
+/*
  private static class UserData{
  int passwordHash;
  String role;
@@ -157,4 +259,5 @@ private static final Map<String,UserData> userDatabase = new HashMap<>();
  this.role = role;
  }
  }
-}
+ 
+}*/
